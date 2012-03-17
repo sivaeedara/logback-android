@@ -23,6 +23,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
+import ch.qos.logback.core.CoreConstants;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +36,10 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.util.TestHelper;
 
 import static ch.qos.logback.classic.util.TestHelper.addSuppressed;
-import static org.junit.Assert.*;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assume.assumeTrue;
 
 public class ThrowableProxyConverterTest {
@@ -158,6 +162,57 @@ public class ThrowableProxyConverterTest {
     assertTrue(reader.readLine().contains(t.getMessage()));
     assertNotNull(reader.readLine());
     assertNull("Unexpected line in stack trace", reader.readLine());
+  }
+
+  @Test
+  public void skipSelectedLine() throws Exception {
+    //given
+    final Throwable t = TestHelper.makeNestedException(0);
+    t.printStackTrace(pw);
+    final ILoggingEvent le = createLoggingEvent(t);
+    tpc.setOptionList(Arrays.asList("full", "skipSelectedLines"));
+    tpc.start();
+
+    //when
+    final String result = tpc.convert(le);
+
+    //then
+    assertThat(result).excludes("skipSelectedLines");
+  }
+
+  @Test
+  public void skipMultipleLines() throws Exception {
+    //given
+    final Throwable t = TestHelper.makeNestedException(0);
+    t.printStackTrace(pw);
+    final ILoggingEvent le = createLoggingEvent(t);
+    tpc.setOptionList(Arrays.asList("full", "skipMultipleLines", "junit"));
+    tpc.start();
+
+    //when
+    final String result = tpc.convert(le);
+
+    //then
+    assertThat(result)
+        .excludes("skipSelectedLines")
+        .excludes("junit");
+  }
+
+  @Test
+  public void shouldLimitTotalLinesExcludingSkipped() throws Exception {
+    //given
+    final Throwable t = TestHelper.makeNestedException(0);
+    t.printStackTrace(pw);
+    final ILoggingEvent le = createLoggingEvent(t);
+    tpc.setOptionList(Arrays.asList("3", "shouldLimitTotalLinesExcludingSkipped"));
+    tpc.start();
+
+    //when
+    final String result = tpc.convert(le);
+
+    //then
+    String[] lines = result.split(CoreConstants.LINE_SEPARATOR);
+    assertThat(lines).hasSize(3 + 1);
   }
 
   void someMethod() throws Exception {
