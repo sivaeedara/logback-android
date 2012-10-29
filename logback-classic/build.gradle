@@ -9,6 +9,7 @@ dependencies {
   testCompile 'org.easytesting:fest-assert:1.2'
   testCompile "org.slf4j:integration:${slf4jVersion}"
   testCompile "org.slf4j:log4j-over-slf4j:${slf4jVersion}"
+  testCompile "log4j:log4j:1.2.17"
   testCompile "org.slf4j:slf4j-api:${slf4jVersion}:tests"
   testCompile "org.slf4j:slf4j-ext:${slf4jVersion}"
   testCompile(group: 'org.subethamail', name: 'subethasmtp', version: '2.1.0') {
