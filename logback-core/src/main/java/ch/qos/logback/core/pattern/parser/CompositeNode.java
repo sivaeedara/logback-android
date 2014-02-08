@@ -48,9 +48,9 @@ public class CompositeNode extends SimpleKeywordNode {
   }
 
   public String toString() {
-    StringBuffer buf = new StringBuffer();
-    if(childNode != null) {
-     buf.append("CompositeNode("+childNode+")");
+    StringBuilder buf = new StringBuilder();
+    if (childNode != null) {
+      buf.append("CompositeNode(" + childNode + ")");
     } else {
       buf.append("CompositeNode(no child)");
     }
