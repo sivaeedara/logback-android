@@ -38,6 +38,8 @@ import ch.qos.logback.core.util.StatusPrinter;
 
 public class SyslogAppenderTest {
 
+  private static final String SYSLOG_PREFIX_REGEX = "<\\d{2}>\\w{3} [\\d ]\\d \\d{2}(:\\d{2}){2} [\\w.-]* ";
+
   LoggerContext lc = new LoggerContext();
   SyslogAppenderFriend sa;// = new SyslogAppenderFriend();
   MockSyslogServer mockServer;
@@ -105,9 +107,33 @@ public class SyslogAppenderTest {
         + (SyslogConstants.LOG_MAIL + SyslogConstants.DEBUG_SEVERITY) + ">";
     assertTrue(msg.startsWith(expected));
 
-    String first = "<\\d{2}>\\w{3} \\d{2} \\d{2}(:\\d{2}){2} [\\w.-]* ";
-    checkRegexMatch(msg, first + "\\[" + threadName + "\\] " + loggerName + " "
+    checkRegexMatch(msg, SYSLOG_PREFIX_REGEX + "\\[" + threadName + "\\] " + loggerName + " "
         + logMsg);
+
+  }
+
+  @Test
+  public void suffixPatternWithTag() throws InterruptedException {
+    setMockServerAndConfigure(1, "test/something [%thread] %logger %msg");
+    String logMsg = "hello";
+    logger.debug(logMsg);
+
+    // wait max 2 seconds for mock server to finish. However, it should
+    // much sooner than that.
+    mockServer.join(8000);
+
+    assertTrue(mockServer.isFinished());
+    assertEquals(1, mockServer.getMessageList().size());
+    String msg = mockServer.getMessageList().get(0);
+
+    String threadName = Thread.currentThread().getName();
+
+    String expected = "<"
+        + (SyslogConstants.LOG_MAIL + SyslogConstants.DEBUG_SEVERITY) + ">";
+    assertTrue(msg.startsWith(expected));
+
+    checkRegexMatch(msg, SYSLOG_PREFIX_REGEX + "test/something \\[" + threadName + "\\] " + loggerName + " "
+            + logMsg);
 
   }
 
@@ -138,9 +164,8 @@ public class SyslogAppenderTest {
         + (SyslogConstants.LOG_MAIL + SyslogConstants.DEBUG_SEVERITY) + ">";
     assertTrue(msg.startsWith(expected));
 
-    String expectedPrefix = "<\\d{2}>\\w{3} \\d{2} \\d{2}(:\\d{2}){2} [\\w.-]* ";
     String threadName = Thread.currentThread().getName();
-    String regex = expectedPrefix + "\\[" + threadName + "\\] " + loggerName
+    String regex = SYSLOG_PREFIX_REGEX + "\\[" + threadName + "\\] " + loggerName
         + " " + logMsg;
     checkRegexMatch(msg, regex);
 
@@ -150,7 +175,7 @@ public class SyslogAppenderTest {
 
     msg = mockServer.getMessageList().get(2);
     assertTrue(msg.startsWith(expected));
-    regex = expectedPrefix + "\\[" + threadName + "\\] " +  "foo "+CoreConstants.TAB + "at ch\\.qos.*";
+    regex = SYSLOG_PREFIX_REGEX + "\\[" + threadName + "\\] " +  "foo "+CoreConstants.TAB + "at ch\\.qos.*";
     checkRegexMatch(msg, regex);
   }
 
@@ -181,20 +206,19 @@ public class SyslogAppenderTest {
 
     String expected = "<"
         + (SyslogConstants.LOG_MAIL + SyslogConstants.DEBUG_SEVERITY) + ">";
-    String expectedPrefix = "<\\d{2}>\\w{3} \\d{2} \\d{2}(:\\d{2}){2} [\\w.-]* ";
     String threadName = Thread.currentThread().getName();
 
     // large message is truncated
     final int maxMessageSize = sa.getMaxMessageSize();
     String largeMsg = mockServer.getMessageList().get(0);
     assertTrue(largeMsg.startsWith(expected));
-    String largeRegex = expectedPrefix + "\\[" + threadName + "\\] " + loggerName
+    String largeRegex = SYSLOG_PREFIX_REGEX + "\\[" + threadName + "\\] " + loggerName
         + " " + "a{" + (maxMessageSize - 2000) + "," + maxMessageSize + "}";
     checkRegexMatch(largeMsg, largeRegex);
 
     String msg = mockServer.getMessageList().get(1);
     assertTrue(msg.startsWith(expected));
-    String regex = expectedPrefix + "\\[" + threadName + "\\] " + loggerName
+    String regex = SYSLOG_PREFIX_REGEX + "\\[" + threadName + "\\] " + loggerName
         + " " + logMsg;
     checkRegexMatch(msg, regex);
   }
