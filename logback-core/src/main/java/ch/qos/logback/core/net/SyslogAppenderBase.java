@@ -75,7 +75,7 @@ public abstract class SyslogAppenderBase<E> extends AppenderBase<E> {
 
   private boolean connect() {
     try {
-      sos = new SyslogOutputStream(syslogHost, port);
+      sos = createOutputStream();
 
       final int systemDatagramSize = sos.getSendBufferSize();
       if (maxMessageSize == 0) {
@@ -96,6 +96,8 @@ public abstract class SyslogAppenderBase<E> extends AppenderBase<E> {
     // SyslogOutputStream must be non-null to be connected
     return sos != null;
   }
+
+  abstract public SyslogOutputStream createOutputStream() throws UnknownHostException, SocketException;
 
   @Override
   protected void append(E eventObject) {
