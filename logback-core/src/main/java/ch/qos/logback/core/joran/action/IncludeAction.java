@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import ch.qos.logback.core.helpers.ThrowableToStringArray;
 import ch.qos.logback.core.joran.event.SaxEvent;
 import ch.qos.logback.core.joran.event.SaxEventRecorder;
 import ch.qos.logback.core.joran.spi.InterpretationContext;
@@ -92,10 +93,7 @@ public class IncludeAction extends AbstractIncludeAction {
     try {
       return url.openStream();
     } catch (IOException e) {
-      if (!isOptional()) {
-        String errMsg = "Failed to open [" + url.toString() + "]";
-        addError(errMsg, e);
-      }
+      optionalWarning("Failed to open [" + url.toString() + "]", e);
       return null;
     }
   }
@@ -152,5 +150,16 @@ public class IncludeAction extends AbstractIncludeAction {
    */
   private String getEventName(SaxEvent event) {
     return event.qName.length() > 0 ? event.qName : event.localName;
+  }
+
+  /**
+   * Logs a warning only if this IncludeAction's "optional" were true
+   * @param msg - message to log
+   * @param t - throwable to include in warning
+     */
+  private void optionalWarning(String msg, Throwable t) {
+    if (!isOptional()) {
+      addWarn(msg, t);
+    }
   }
 }
