@@ -17,37 +17,17 @@ import static ch.qos.logback.core.BasicStatusManager.MAX_HEADER_COUNT;
 import static ch.qos.logback.core.BasicStatusManager.TAIL_SIZE;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
-
-import ch.qos.logback.core.spi.ContextAware;
-import ch.qos.logback.core.spi.ContextAwareBase;
 import ch.qos.logback.core.status.ErrorStatus;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
-import ch.qos.logback.core.status.StatusListener;
-
 
 public class BasicStatusManagerTest {
-
-
   BasicStatusManager bsm = new BasicStatusManager();
-  Context context = new ContextBase();
-  ContextAware contextAware = new ContextAwareBase();
-  OnConsoleStatusListener csl = new OnConsoleStatusListener();
-
-  @Before
-  public void before() {
-    contextAware.setContext(context);
-    csl.setContext(context);
-    bsm.clear();
-  }
 
   @Test
   public void smoke() {
@@ -63,54 +43,35 @@ public class BasicStatusManagerTest {
   @Test
   public void many() {
     int margin = 300;
-    int len = MAX_HEADER_COUNT+TAIL_SIZE+margin;
-    for(int i = 0; i < len; i++) {
-      bsm.add(new ErrorStatus(""+i, this));
+    int len = MAX_HEADER_COUNT + TAIL_SIZE + margin;
+    for (int i = 0; i < len; i++) {
+      bsm.add(new ErrorStatus("" + i, this));
     }
 
     List<Status> statusList = bsm.getCopyOfStatusList();
     assertNotNull(statusList);
-    assertEquals(MAX_HEADER_COUNT+TAIL_SIZE, statusList.size());
+    assertEquals(MAX_HEADER_COUNT + TAIL_SIZE, statusList.size());
     List<Status> witness = new ArrayList<Status>();
-    for(int i = 0; i < MAX_HEADER_COUNT; i++) {
-      witness.add(new ErrorStatus(""+i, this));
+    for (int i = 0; i < MAX_HEADER_COUNT; i++) {
+      witness.add(new ErrorStatus("" + i, this));
     }
-    for(int i = 0; i < TAIL_SIZE; i++) {
-      witness.add(new ErrorStatus(""+(MAX_HEADER_COUNT+margin+i), this));
+    for (int i = 0; i < TAIL_SIZE; i++) {
+      witness.add(new ErrorStatus("" + (MAX_HEADER_COUNT + margin + i), this));
     }
     assertEquals(witness, statusList);
   }
 
   @Test
-  public void returnsTrueForNewlyAddedConsoleListener() {
-    assertTrue(bsm.addUniquely(csl, contextAware));
-    assertEquals(OnConsoleStatusListener.class, bsm.getCopyOfStatusListenerList().get(0).getClass());
+  public void duplicateInstallationsOfOnConsoleListener() {
+    OnConsoleStatusListener sl0 = new OnConsoleStatusListener();
+    sl0.start();
+    OnConsoleStatusListener sl1 = new OnConsoleStatusListener();
+    sl1.start();
 
-    List<StatusListener> statusList = bsm.getCopyOfStatusListenerList();
-    assertEquals(1, statusList.size());
-  }
+    bsm.add(sl0);
+    assertEquals(1, bsm.getCopyOfStatusListenerList().size());
 
-  @Test
-  public void returnsFalseWhenNoConsoleListenerAdded() {
-    bsm.addUniquely(csl, contextAware);
-    assertFalse(bsm.addUniquely(csl, contextAware));
-
-    List<StatusListener> statusList = bsm.getCopyOfStatusListenerList();
-    assertEquals(1, statusList.size());
-  }
-
-  @Test
-  public void addsConsoleStatusListenerOnlyIfAbsent() {
-    bsm.addUniquely(csl, contextAware);
-
-    List<StatusListener> statusList = bsm.getCopyOfStatusListenerList();
-    assertEquals(1, statusList.size());
-    assertEquals(csl, statusList.get(0));
-
-    bsm.addUniquely(csl, contextAware);
-
-    statusList = bsm.getCopyOfStatusListenerList();
-    assertEquals(1, statusList.size());
-    assertEquals(csl, statusList.get(0));
+    bsm.add(sl1);
+    assertEquals(1, bsm.getCopyOfStatusListenerList().size());
   }
 }

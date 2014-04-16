@@ -40,7 +40,7 @@ public class OnConsoleStatusListener extends OnPrintStreamStatusListenerBase {
 
     OnConsoleStatusListener onConsoleStatusListener = new OnConsoleStatusListener();
     onConsoleStatusListener.setContext(loggerContext);
-    boolean result = loggerContext.getStatusManager().addUniquely(onConsoleStatusListener, loggerContext);
+    boolean result = loggerContext.getStatusManager().add(onConsoleStatusListener, loggerContext);
 
     // start only if registered successfully. This check avoids superfluous
     // printing on the console.

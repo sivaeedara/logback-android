@@ -56,19 +56,7 @@ public interface StatusManager {
    */
   void add(StatusListener listener);
 
-
-  /**
-   * Add a status listener unless another instance of the same type has been
-   * previously registered.
-   *
-   * @param listener the status listener
-   * @param origin the caller of this method
-   * @return true if the listener has been registered, false otherwise
-   */
-  boolean addUniquely(StatusListener listener, Object origin);
-
-
-  /**
+  /**);
    * Remove a status listener.
    *
    * @param listener the status listener
@@ -88,5 +76,7 @@ public interface StatusManager {
    * @return the status listener list
    */
   List<StatusListener> getCopyOfStatusListenerList();
+
+
 
 }
