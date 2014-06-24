@@ -382,7 +382,7 @@ public class AbstractSocketAppenderTest {
   }
 
   @Test
-  public void reEstablishesSocketConnectionOnConnectionDrop() throws Exception {
+  public void reEstablishesSocketConnectionOnConnectionDropWhenWritingEvent() throws Exception {
 
     // given
     doThrow(new IOException()).when(objectWriter).write(anyObject());
@@ -394,6 +394,20 @@ public class AbstractSocketAppenderTest {
 
     // then
     verify(objectWriterFactory, timeout(TIMEOUT).atLeast(2)).newAutoFlushingObjectWriter(any(OutputStream.class));
+  }
+
+  @Test
+  public void triesToReEstablishSocketConnectionIfItFailed() throws Exception {
+
+    // given
+    doThrow(new IOException()).when(socket).getOutputStream();
+    appender.start();
+
+    // when
+    appender.append("some event");
+
+    // then
+    verify(socketConnector, timeout(TIMEOUT).atLeast(2)).call();
   }
 
   @Test
