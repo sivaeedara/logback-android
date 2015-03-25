@@ -243,6 +243,6 @@ public class AsyncAppenderBaseTest {
     asyncAppenderBase.addAppender(delayingListAppender);
     asyncAppenderBase.start();
     asyncAppenderBase.stop();
-    assertTrue(asyncAppenderBase.worker.isInterrupted());
+    assertFalse(asyncAppenderBase.worker.isInterrupted());
   }
 }
