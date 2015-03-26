@@ -13,13 +13,16 @@
  */
 package ch.qos.logback.classic.sift;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.MDC;
 
@@ -43,20 +46,6 @@ import ch.qos.logback.core.status.StatusChecker;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import ch.qos.logback.core.testUtil.StringListAppender;
 import ch.qos.logback.core.util.StatusPrinter;
-import org.junit.Test;
-import org.slf4j.MDC;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-import org.slf4j.MDC;
-
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class SiftingAppenderTest {
 
@@ -75,6 +64,16 @@ public class SiftingAppenderTest {
     jc.doConfigure(file);
   }
 
+  @Before
+  public void setUp() {
+    MDC.clear();
+  }
+  
+  @After
+  public void tearDown() {
+    MDC.clear();
+  }
+  
   @Test
   public void unsetDefaultValueProperty() throws JoranException {
     configure(SIFT_FOLDER_PREFIX + "unsetDefaultValueProperty.xml");
