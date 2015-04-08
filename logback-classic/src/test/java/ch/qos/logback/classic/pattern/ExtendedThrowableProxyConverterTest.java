@@ -13,8 +13,8 @@
  */
 package ch.qos.logback.classic.pattern;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.fest.assertions.Assertions.assertThat;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -41,6 +41,7 @@ public class ExtendedThrowableProxyConverterTest {
 
   @Before
   public void setUp() throws Exception {
+    lc.setPackagingDataEnabled(true);
     etpc.setContext(lc);
     etpc.start();
   }
@@ -59,7 +60,7 @@ public class ExtendedThrowableProxyConverterTest {
   public void integration() {
     PatternLayout pl = new PatternLayout();
     pl.setContext(lc);
-    pl.setPattern("%m%n");
+    pl.setPattern("%m%n%xEx");
     pl.start();
     ILoggingEvent e = createLoggingEvent(new Exception("x"));
     String res = pl.doLayout(e);
@@ -71,7 +72,8 @@ public class ExtendedThrowableProxyConverterTest {
     while(m.find()) {
       i++;
     }
-    assertTrue(i+ " should be larger than 1", i >= 1);
+
+    assertThat(i).isGreaterThan(0);
   }
 
   @Test
