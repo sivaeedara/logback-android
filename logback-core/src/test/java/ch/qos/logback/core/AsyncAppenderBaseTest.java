@@ -1,13 +1,13 @@
 /**
  * Logback: the reliable, generic, fast and flexible logging framework.
  * Copyright (C) 1999-2013, QOS.ch. All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials are dual-licensed under
  * either the terms of the Eclipse Public License v1.0 as published by
  * the Eclipse Foundation
- *
- *   or (per the licensee's choosing)
- *
+ * <p>
+ * or (per the licensee's choosing)
+ * <p>
  * under the terms of the GNU Lesser General Public License version 2.1
  * as published by the Free Software Foundation.
  */
@@ -114,6 +114,24 @@ public class AsyncAppenderBaseTest {
   }
 
   @Test(timeout = 2000)
+  public void eventLossIfNeverBlock() {
+    int bufferSize = 10;
+    int loopLen = bufferSize * 2;
+    delayingListAppender.setDelay(5000); // something greater than the test timeout
+    asyncAppenderBase.addAppender(delayingListAppender);
+    asyncAppenderBase.setQueueSize(bufferSize);
+    asyncAppenderBase.setNeverBlock(true);
+    asyncAppenderBase.start();
+    for (int i = 0; i < loopLen; i++) {
+      asyncAppenderBase.doAppend(i);
+    }
+    asyncAppenderBase.stop();
+    // ListAppender size isn't a reliable test here, so just make sure we didn't
+    // have any errors, and that we could complete the test in time.
+    statusChecker.assertIsErrorFree();
+  }
+
+  @Test(timeout = 2000)
   public void lossyAppenderShouldOnlyLooseCertainEvents() {
     int bufferSize = 5;
     int loopLen = bufferSize * 2;
@@ -173,11 +191,11 @@ public class AsyncAppenderBaseTest {
 
     asyncAppenderBase.worker.resume();
     asyncAppenderBase.stop();
-    
+
     assertEquals(0, asyncAppenderBase.getNumberOfElementsInQueue());
     verify(la, loopLen);
   }
-  
+
   @Test
   public void stopExitsWhenMaxRuntimeReached() throws InterruptedException {
     int maxRuntime = 1;  //runtime of 0 means wait forever, so use 1 ms instead
@@ -186,27 +204,27 @@ public class AsyncAppenderBaseTest {
     asyncAppenderBase.addAppender(la);
     asyncAppenderBase.setMaxFlushTime(maxRuntime);
     asyncAppenderBase.start();
-    
+
     for (int i = 0; i < loopLen; i++) {
-        asyncAppenderBase.doAppend(i);
-      }
-    
+      asyncAppenderBase.doAppend(i);
+    }
+
     asyncAppenderBase.stop();
-    
+
     //suspend the thread so that we can make the following assertions without race conditions
     asyncAppenderBase.worker.suspend();
-    
+
     //confirms that stop exited when runtime reached
     statusChecker.assertContainsMatch("Max queue flush timeout \\(" + maxRuntime + " ms\\) exceeded.");
 
     //confirms that the number of events posted are the number of events removed from the queue
     assertEquals(la.list.size(), loopLen - asyncAppenderBase.getNumberOfElementsInQueue());
-    
+
     //resume the thread to let it finish processing
     asyncAppenderBase.worker.resume();
-    
+
     asyncAppenderBase.worker.join();
-    
+
     //confirms that all entries do end up being flushed if we wait long enough
     verify(la, loopLen);
   }
