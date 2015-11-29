@@ -36,7 +36,7 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 import ch.qos.logback.classic.util.TestHelper;
 
 import static ch.qos.logback.classic.util.TestHelper.addSuppressed;
-import static org.fest.assertions.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
@@ -177,7 +177,7 @@ public class ThrowableProxyConverterTest {
     final String result = tpc.convert(le);
 
     //then
-    assertThat(result).excludes("skipSelectedLines");
+    assertThat(result).doesNotContain("skipSelectedLines");
   }
 
   @Test
@@ -193,9 +193,7 @@ public class ThrowableProxyConverterTest {
     final String result = tpc.convert(le);
 
     //then
-    assertThat(result)
-        .excludes("skipSelectedLines")
-        .excludes("junit");
+    assertThat(result).doesNotContain("skipSelectedLines").doesNotContain("junit");
   }
 
   @Test

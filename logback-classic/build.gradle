@@ -6,7 +6,7 @@ dependencies {
   testCompile files(project(':logback-android-core').sourceSets.test.output)
   testCompile 'com.icegreen:greenmail:1.3'
   testCompile 'dom4j:dom4j:1.6.1'
-  testCompile 'org.easytesting:fest-assert:1.2'
+  testCompile 'org.assertj:assertj-core:1.7.1'
   testCompile "org.slf4j:integration:${slf4jVersion}"
   testCompile "org.slf4j:log4j-over-slf4j:${slf4jVersion}"
   testCompile "log4j:log4j:1.2.17"
