@@ -36,15 +36,17 @@ import org.slf4j.spi.MDCAdapter;
  *
  * @author Ceki G&uuml;lc&uuml;
  */
-public final class LogbackMDCAdapter implements MDCAdapter {
+public class LogbackMDCAdapter implements MDCAdapter {
 
+  // The internal map is copied so as 
+  
   // We wish to avoid unnecessarily copying of the map. To ensure
   // efficient/timely copying, we have a variable keeping track of the last
   // operation. A copy is necessary on 'put' or 'remove' but only if the last
   // operation was a 'get'. Get operations never necessitate a copy nor
   // successive 'put/remove' operations, only a get followed by a 'put/remove'
   // requires copying the map.
-  // See http://jira.qos.ch/browse/LBCLASSIC-254 for the original discussion.
+  // See http://jira.qos.ch/browse/LOGBACK-620 for the original discussion.
 
   // We no longer use CopyOnInheritThreadLocal in order to solve LBCLASSIC-183
   // Initially the contents of the thread local in parent and child threads
@@ -53,7 +55,7 @@ public final class LogbackMDCAdapter implements MDCAdapter {
   final InheritableThreadLocal<Map<String, String>> copyOnInheritThreadLocal = new InheritableThreadLocal<Map<String, String>>();
 
   private static final int WRITE_OPERATION = 1;
-  private static final int READ_OPERATION = 2;
+  private static final int MAP_COPY_OPERATION = 2;
 
   // keeps track of the last operation performed
   final ThreadLocal<Integer> lastOperation = new ThreadLocal<Integer>();
@@ -65,7 +67,7 @@ public final class LogbackMDCAdapter implements MDCAdapter {
   }
 
   private boolean wasLastOpReadOrNull(Integer lastOp) {
-    return lastOp == null || lastOp.intValue() == READ_OPERATION;
+    return lastOp == null || lastOp.intValue() == MAP_COPY_OPERATION;
   }
 
   private Map<String, String> duplicateAndInsertNewMap(Map<String, String> oldMap) {
@@ -141,9 +143,9 @@ public final class LogbackMDCAdapter implements MDCAdapter {
    * Get the context identified by the <code>key</code> parameter.
    */
   public String get(String key) {
-    final Map<String, String> hashMap = copyOnInheritThreadLocal.get();
-    if (hashMap != null && key != null) {
-      return hashMap.get(key);
+    final Map<String, String> map = copyOnInheritThreadLocal.get();
+    if ((map != null) && (key != null)) {
+         return map.get(key);
     } else {
       return null;
     }
@@ -154,7 +156,7 @@ public final class LogbackMDCAdapter implements MDCAdapter {
    * internally.
    */
   public Map<String, String> getPropertyMap() {
-    lastOperation.set(READ_OPERATION);
+    lastOperation.set(MAP_COPY_OPERATION);
     return copyOnInheritThreadLocal.get();
   }
 
@@ -176,8 +178,7 @@ public final class LogbackMDCAdapter implements MDCAdapter {
    * Return a copy of the current thread's context map. Returned value may be
    * null.
    */
-  public Map getCopyOfContextMap() {
-    lastOperation.set(READ_OPERATION);
+  public Map<String, String> getCopyOfContextMap() {
     Map<String, String> hashMap = copyOnInheritThreadLocal.get();
     if (hashMap == null) {
       return null;
@@ -186,8 +187,7 @@ public final class LogbackMDCAdapter implements MDCAdapter {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  public void setContextMap(Map contextMap) {
+  public void setContextMap(Map<String, String> contextMap) {
     lastOperation.set(WRITE_OPERATION);
 
     Map<String, String> newMap = Collections.synchronizedMap(new HashMap<String, String>());
