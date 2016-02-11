@@ -13,18 +13,18 @@
  */
 package ch.qos.logback.core;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import ch.qos.logback.core.helpers.NOPAppender;
 import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.testUtil.DelayingListAppender;
 import ch.qos.logback.core.status.StatusChecker;
 import ch.qos.logback.core.testUtil.NPEAppender;
-
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Ceki G&uuml;lc&uuml;
@@ -116,8 +116,8 @@ public class AsyncAppenderBaseTest {
   @Test(timeout = 2000)
   public void eventLossIfNeverBlock() {
     int bufferSize = 10;
-    int loopLen = bufferSize * 2;
-    delayingListAppender.setDelay(5000); // something greater than the test timeout
+    int loopLen = bufferSize * 200;
+    delayingListAppender.setDelay(5); // (loopLen*delay) much bigger than test timeout
     asyncAppenderBase.addAppender(delayingListAppender);
     asyncAppenderBase.setQueueSize(bufferSize);
     asyncAppenderBase.setNeverBlock(true);
