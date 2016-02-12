@@ -13,19 +13,18 @@
  */
 package ch.qos.logback.core.recovery;
 
-import ch.qos.logback.core.Context;
-import ch.qos.logback.core.ContextBase;
-import ch.qos.logback.core.testUtil.RandomUtil;
-import ch.qos.logback.core.util.CoreTestConstants;
-import ch.qos.logback.core.util.StatusPrinter;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+
+import java.io.File;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
-
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.ContextBase;
+import ch.qos.logback.core.testUtil.RandomUtil;
+import ch.qos.logback.core.util.CoreTestConstants;
 
 /**
  * @author Ceki G&uuml;c&uuml;
