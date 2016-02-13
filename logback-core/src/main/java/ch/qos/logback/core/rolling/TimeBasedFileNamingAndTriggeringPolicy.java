@@ -24,8 +24,7 @@ import ch.qos.logback.core.spi.ContextAware;
  *
  * @param <E> type of log event object
  */
-public interface TimeBasedFileNamingAndTriggeringPolicy<E> extends
-    TriggeringPolicy<E>, ContextAware {
+public interface TimeBasedFileNamingAndTriggeringPolicy<E> extends TriggeringPolicy<E>, ContextAware {
 
   /**
    * Set the host/parent {@link TimeBasedRollingPolicy}.
