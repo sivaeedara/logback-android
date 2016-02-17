@@ -13,11 +13,18 @@
  */
 package ch.qos.logback.classic;
 
-import java.util.*;
+import static ch.qos.logback.core.CoreConstants.EVALUATOR_MAP;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import ch.qos.logback.classic.util.LoggerNameUtil;
-
+import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.joran.spi.JoranException;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Marker;
 
@@ -27,9 +34,8 @@ import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.classic.spi.LoggerContextVO;
 import ch.qos.logback.classic.spi.TurboFilterList;
 import ch.qos.logback.classic.turbo.TurboFilter;
+import ch.qos.logback.classic.util.LoggerNameUtil;
 import ch.qos.logback.core.ContextBase;
-import ch.qos.logback.core.CoreConstants;
-import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.boolex.EventEvaluator;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.spi.LifeCycle;
@@ -82,9 +88,10 @@ public class LoggerContext extends ContextBase implements ILoggerFactory,
   }
 
   void initEvaluatorMap() {
-    putObject(CoreConstants.EVALUATOR_MAP, new HashMap<String, EventEvaluator<?>>());
+    putObject(EVALUATOR_MAP, new HashMap<String, EventEvaluator<?>>());
   }
-
+ 
+  
   /**
    * A new instance of LoggerContextRemoteView needs to be created each time the
    * name or propertyMap (including keys or values) changes.
@@ -244,6 +251,7 @@ public class LoggerContext extends ContextBase implements ILoggerFactory,
     resetCount++;
     super.reset();
     initEvaluatorMap();
+    initCollisionMaps();
     root.recursiveReset();
     resetTurboFilterList();
     fireOnReset();
