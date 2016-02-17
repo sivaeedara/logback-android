@@ -41,7 +41,8 @@ public class CoreConstants {
 
 
   public static final String CODES_URL = "http://logback.qos.ch/codes.html";
-
+  public static final String MORE_INFO_PREFIX = "For more information, please visit ";
+  
   /**
    * The default context name.
    */
@@ -174,12 +175,12 @@ public class CoreConstants {
    */
   public static final String VERSION_CODE_KEY = "VERSION_CODE";
 
-  public static final int BYTES_PER_INT = 4;
-  public static final int MILLIS_IN_ONE_SECOND = 1000;
-  public static final int MILLIS_IN_ONE_MINUTE = MILLIS_IN_ONE_SECOND*60;
-  public static final int MILLIS_IN_ONE_HOUR = MILLIS_IN_ONE_MINUTE*60;
-  public static final int MILLIS_IN_ONE_DAY = MILLIS_IN_ONE_HOUR*24;
-  public static final int MILLIS_IN_ONE_WEEK = MILLIS_IN_ONE_DAY*7;
+  public static final int  BYTES_PER_INT = 4;
+  public static final long MILLIS_IN_ONE_SECOND = 1000;
+  public static final long MILLIS_IN_ONE_MINUTE = MILLIS_IN_ONE_SECOND*60;
+  public static final long MILLIS_IN_ONE_HOUR = MILLIS_IN_ONE_MINUTE*60;
+  public static final long MILLIS_IN_ONE_DAY = MILLIS_IN_ONE_HOUR*24;
+  public static final long MILLIS_IN_ONE_WEEK = MILLIS_IN_ONE_DAY*7;
 
   /**
    * The number of seconds to wait for compression jobs to finish.
