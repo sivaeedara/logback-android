@@ -22,7 +22,6 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class TokenizerTest {
-
   List<Token> witnessList = new ArrayList<Token>();
 
   @Test
@@ -144,5 +143,23 @@ public class TokenizerTest {
     assertEquals(witnessList, tokenList);
   }
 
-
+  @Test
+  public void literalContainingColon() throws ScanException {
+    String input = "a:b";
+    Tokenizer tokenizer = new Tokenizer(input);
+    List<Token> tokenList = tokenizer.tokenize();
+    witnessList.add(new Token(Token.Type.LITERAL, "a"));
+    witnessList.add(new Token(Token.Type.LITERAL, ":b"));
+    assertEquals(witnessList, tokenList);
   }
+
+  @Test
+  public void literalEndingWithColon_LOGBACK_1140() throws ScanException {
+    String input = "a:";
+    Tokenizer tokenizer = new Tokenizer(input);
+    List<Token> tokenList = tokenizer.tokenize();
+    witnessList.add(new Token(Token.Type.LITERAL, "a"));
+    witnessList.add(new Token(Token.Type.LITERAL, ":"));
+    assertEquals(witnessList, tokenList);
+  }
+}
