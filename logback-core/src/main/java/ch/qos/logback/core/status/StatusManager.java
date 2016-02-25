@@ -17,8 +17,13 @@ import java.util.List;
 
 /**
  * Internal error messages (statii) are managed by instances of this interface.
+<<<<<<< HEAD
  *
  * @author Ceki Gulcu
+=======
+ * 
+ * @author Ceki G&uuml;lc&uuml;
+>>>>>>> e5eecbc... various cleanup
  */
 public interface StatusManager {
 
@@ -54,7 +59,15 @@ public interface StatusManager {
    * Add a status listener.
    * @param listener the status listener
    */
-  void add(StatusListener listener);
+  
+  /**
+   * Add a status listener. The StatusManager may decide to skip installation if an 
+   * earlier instance was already installed.
+   * 
+   * @param listener
+   * @return true if actually added, false if skipped
+   */
+  boolean add(StatusListener listener);
 
   /**);
    * Remove a status listener.
