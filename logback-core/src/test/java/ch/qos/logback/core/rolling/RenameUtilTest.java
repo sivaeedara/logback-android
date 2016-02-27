@@ -109,6 +109,7 @@ public class RenameUtilTest {
 
 
     @Test
+    @Ignore
     public void MANUAL_renamingOnDifferentVolumesOnWindows() throws IOException, RolloverFailure {
         RenameUtil renameUtil = new RenameUtil();
         renameUtil.setContext(context);
