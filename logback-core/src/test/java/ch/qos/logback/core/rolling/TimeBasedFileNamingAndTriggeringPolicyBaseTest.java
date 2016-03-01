@@ -14,6 +14,7 @@
 package ch.qos.logback.core.rolling;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -21,6 +22,8 @@ import org.junit.Test;
 
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.ContextBase;
+import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.status.StatusChecker;
 
 /**
  * @author Ceki G&uuml;c&uuml;
@@ -101,4 +104,14 @@ public class TimeBasedFileNamingAndTriggeringPolicyBaseTest {
     
   }
 
+  @Test
+  public void extraIntegerTokenInFileNamePatternShouldBeDetected() {
+    String pattern = "test-%d{yyyy-MM-dd'T'HH}-%i.log.zip";
+    tbrp.setFileNamePattern(pattern);
+    tbrp.start();
+
+    assertFalse(tbrp.isStarted());
+    StatusChecker statusChecker = new StatusChecker(context);
+    statusChecker.assertContainsMatch(Status.ERROR, "Filename pattern .{37} contains an integer token converter");
+  }
 }
