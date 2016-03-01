@@ -1,6 +1,6 @@
 /**
  * Logback: the reliable, generic, fast and flexible logging framework.
- * Copyright (C) 1999-2013, QOS.ch. All rights reserved.
+ * Copyright (C) 1999-2015, QOS.ch. All rights reserved.
  *
  * This program and the accompanying materials are dual-licensed under
  * either the terms of the Eclipse Public License v1.0 as published by
@@ -22,8 +22,7 @@ public class SizeAndTimeBasedArchiveRemover extends DefaultArchiveRemover {
 
   boolean historyAsFileCount = false;
 
-  public SizeAndTimeBasedArchiveRemover(FileNamePattern fileNamePattern,
-      RollingCalendar rc, boolean historyAsFileCount) {
+  public SizeAndTimeBasedArchiveRemover(FileNamePattern fileNamePattern,  RollingCalendar rc, boolean historyAsFileCount) {
     super(fileNamePattern, rc);
     this.historyAsFileCount = historyAsFileCount;
   }
@@ -32,7 +31,7 @@ public class SizeAndTimeBasedArchiveRemover extends DefaultArchiveRemover {
     Date dateOfPeriodToClean = rc.getEndOfNextNthPeriod(now, periodOffset);
 
     File archive0 = new File(fileNamePattern.convertMultipleArguments(
-        dateOfPeriodToClean, 0));
+            dateOfPeriodToClean, 0));
     // in case the file has no directory part, i.e. if it's written into the
     // user's current directory.
     archive0 = archive0.getAbsoluteFile();
@@ -50,10 +49,11 @@ public class SizeAndTimeBasedArchiveRemover extends DefaultArchiveRemover {
     String stemRegex = createStemRegex(dateOfPeriodToClean);
 
     File[] matchingFileArray = FileFilterUtil.filesInFolderMatchingStemRegex(
-        parentDir, stemRegex);
+            parentDir, stemRegex);
 
     for (File f : matchingFileArray) {
-      Date fileLastModified = rc.getEndOfNextNthPeriod(new Date(f.lastModified()), -1);
+      Date fileLastModified = rc.getEndOfNextNthPeriod(
+              new Date(f.lastModified()), -1);
 
       if (fileLastModified.compareTo(dateOfPeriodToClean) <= 0) {
         addInfo("deleting " + f);
@@ -69,7 +69,7 @@ public class SizeAndTimeBasedArchiveRemover extends DefaultArchiveRemover {
   private void cleanByFile(final Date cleanFrom, final Date cleanTo, final int maxFilesToRetain, final File parentDir) {
     int periodOffset = 0;
     int filesToRetain = maxFilesToRetain;
-    Date dateOfPeriodToClean = rc.getRelativeDate(cleanFrom, periodOffset);
+    Date dateOfPeriodToClean = rc.getEndOfNextNthPeriod(cleanFrom, periodOffset);
     while (dateOfPeriodToClean.after(cleanTo) || dateOfPeriodToClean.equals(cleanTo)) {
       // Find all the files for the period to clean
       String stemRegex = createStemRegex(dateOfPeriodToClean);
@@ -98,7 +98,7 @@ public class SizeAndTimeBasedArchiveRemover extends DefaultArchiveRemover {
 
       // Update remaining files to retain and move back a time period
       filesToRetain = Math.max(0, filesToRetain - matchingFileArray.length);
-      dateOfPeriodToClean = rc.getRelativeDate(cleanFrom, --periodOffset);
+      dateOfPeriodToClean = rc.getEndOfNextNthPeriod(cleanFrom, --periodOffset);
     }
   }
 
