@@ -13,6 +13,7 @@
  */
 package ch.qos.logback.classic.sift;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -107,11 +108,10 @@ public class SiftingAppenderTest {
     logger.debug("hello");
     logger.debug("hello");
     logger.debug("hello");
-    SiftingAppender sa = (SiftingAppender) root.getAppender("SIFT");
 
-    Appender<ILoggingEvent> appender = getAppenderTracker().find("zeroDefault");
-    assertNotNull(appender);
-    NOPAppender<ILoggingEvent> nopa = (NOPAppender<ILoggingEvent>) appender;
+    Appender<ILoggingEvent> nopa = getAppenderTracker().find("zeroDefault");
+    assertNotNull(nopa);
+    assertThat(nopa).isInstanceOf(NOPAppender.class);
     StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
 
     statusChecker.assertContainsMatch(ErrorStatus.ERROR, "No nested appenders found");
