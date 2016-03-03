@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
-import ch.qos.logback.core.read.ListAppender;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import ch.qos.logback.core.util.Duration;
 import org.junit.Test;
@@ -19,8 +18,9 @@ import static org.junit.Assert.assertTrue;
 public class SocketAppenderMessageLossTest {
   int runLen = 100;
   Duration reconnectionDelay =  new Duration(1000);
+  static final int TIMEOUT = 3000;
 
-  @Test(timeout = 1000)
+  @Test(timeout = TIMEOUT)
   public void synchronousSocketAppender() throws Exception {
 
     SocketAppender socketAppender = new SocketAppender();
@@ -30,7 +30,7 @@ public class SocketAppenderMessageLossTest {
     runTest(socketAppender);
   }
 
-  @Test(timeout = 1000)
+  @Test(timeout = TIMEOUT)
   public void smallQueueSocketAppender() throws Exception {
 
     SocketAppender socketAppender = new SocketAppender();
@@ -40,7 +40,7 @@ public class SocketAppenderMessageLossTest {
     runTest(socketAppender);
   }
 
-  @Test(timeout = 1000)
+  @Test(timeout = TIMEOUT)
   public void largeQueueSocketAppender() throws Exception {
     SocketAppender socketAppender = new SocketAppender();
     socketAppender.setReconnectionDelay(reconnectionDelay);
