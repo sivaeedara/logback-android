@@ -21,8 +21,6 @@ import java.util.List;
 
 import static ch.qos.logback.core.CoreConstants.XML_PARSING;
 
-import ch.qos.logback.core.joran.spi.ElementPath;
-import ch.qos.logback.core.joran.spi.ElementSelector;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -34,6 +32,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xmlpull.v1.sax2.Driver;
 
 import ch.qos.logback.core.Context;
+import ch.qos.logback.core.joran.spi.ElementPath;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.ContextAwareImpl;
@@ -171,11 +170,13 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
   public void error(SAXParseException spe) throws SAXException {
     addError(XML_PARSING +" - Parsing error on line " + spe.getLineNumber() + " and column "
         + spe.getColumnNumber(), spe);
+    addError(spe.toString());
   }
 
   public void fatalError(SAXParseException spe) throws SAXException {
     addError(XML_PARSING +" - Parsing fatal error on line " + spe.getLineNumber()
         + " and column " + spe.getColumnNumber(), spe);
+    addError(spe.toString());
   }
 
   public void warning(SAXParseException spe) throws SAXException {

@@ -33,9 +33,12 @@ public class ConfigurationWatchListUtil {
   private ConfigurationWatchListUtil() {
   }
 
-  public static void setMainWatchURL(Context context, URL url) {
-  if (context == null) return;
+  public static void registerConfigurationWatchList(Context context, ConfigurationWatchList cwl) {
+    context.putObject(CoreConstants.CONFIGURATION_WATCH_LIST, cwl);
+  }
 
+  public static void setMainWatchURL(Context context, URL url) {
+    if (context == null) return;
     ConfigurationWatchList cwl = getConfigurationWatchList(context);
     if (cwl == null) {
       cwl = new ConfigurationWatchList();
@@ -44,7 +47,7 @@ public class ConfigurationWatchListUtil {
     } else {
       cwl.clear();
     }
-    setConfigurationWatchListResetFlag(context, true);
+    //setConfigurationWatchListResetFlag(context, true);
     cwl.setMainURL(url);
   }
 
@@ -67,20 +70,19 @@ public class ConfigurationWatchListUtil {
     }
   }
 
-  public static boolean wasConfigurationWatchListReset(Context context) {
-  if (context == null) return false;
+//  public static boolean wasConfigurationWatchListReset(Context context) {
+//    if (context == null) return false;
+//    Object o = context.getObject(CoreConstants.CONFIGURATION_WATCH_LIST_RESET);
+//    if (o == null)
+//      return false;
+//    else {
+//      return ((Boolean) o).booleanValue();
+//    }
+//  }
 
-    Object o = context.getObject(CoreConstants.CONFIGURATION_WATCH_LIST_RESET);
-    if (o == null)
-      return false;
-    else {
-      return ((Boolean) o).booleanValue();
-    }
-  }
-
-  public static void setConfigurationWatchListResetFlag(Context context, boolean val) {
-    context.putObject(CoreConstants.CONFIGURATION_WATCH_LIST_RESET, Boolean.valueOf(val));
-  }
+//  public static void setConfigurationWatchListResetFlag(Context context, boolean val) {
+//    context.putObject(CoreConstants.CONFIGURATION_WATCH_LIST_RESET, Boolean.valueOf(val));
+//  }
 
   public static ConfigurationWatchList getConfigurationWatchList(Context context) {
   if (context == null) return null;

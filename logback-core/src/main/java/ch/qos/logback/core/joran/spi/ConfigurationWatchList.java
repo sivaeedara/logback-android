@@ -37,6 +37,14 @@ public class ConfigurationWatchList extends ContextAwareBase {
     fileWatchList.clear();
   }
 
+  public ConfigurationWatchList buildClone() {
+    ConfigurationWatchList out = new ConfigurationWatchList();
+    out.mainURL = this.mainURL;
+    out.fileWatchList = new ArrayList<File>(this.fileWatchList);
+    out.lastModifiedList = new ArrayList<Long>(this.lastModifiedList);
+    return out;
+  }
+
   /**
    * The mainURL for the configuration file. Null values are allowed.
    * @param mainURL desired URL

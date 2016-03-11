@@ -18,7 +18,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
-import ch.qos.logback.core.helpers.ThrowableToStringArray;
 import ch.qos.logback.core.joran.event.SaxEvent;
 import ch.qos.logback.core.joran.event.SaxEventRecorder;
 import ch.qos.logback.core.joran.spi.InterpretationContext;

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledFuture;
 
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.joran.spi.JoranException;
@@ -254,9 +255,17 @@ public class LoggerContext extends ContextBase implements ILoggerFactory,
     initCollisionMaps();
     root.recursiveReset();
     resetTurboFilterList();
+    cancelScheduledTasks();
     fireOnReset();
     resetListenersExceptResetResistant();
     resetStatusListeners();
+  }
+
+  private void cancelScheduledTasks() {
+    for (ScheduledFuture<?> sf : scheduledFutures) {
+      sf.cancel(false);
+    }
+    scheduledFutures.clear();
   }
 
   private void resetStatusListeners() {

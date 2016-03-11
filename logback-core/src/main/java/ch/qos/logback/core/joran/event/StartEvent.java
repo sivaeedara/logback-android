@@ -35,10 +35,23 @@ public class StartEvent extends SaxEvent {
     return attributes;
   }
 
-  
   @Override
   public String toString() {
-    return "StartEvent("+getQName()+")  ["+locator.getLineNumber()+","+locator.getColumnNumber()+"]";
+    StringBuilder b = new StringBuilder("StartEvent(");
+    b.append(getQName());
+    if(attributes != null) {
+      for(int i = 0; i < attributes.getLength(); i++) {
+        if(i > 0)
+          b.append(' ');
+        b.append(attributes.getLocalName(i)).append("=\"").append(attributes.getValue(i)).append("\"");
+      }
+    }
+    b.append(")  [");
+    b.append( locator.getLineNumber());
+    b.append(",");
+    b.append(locator.getColumnNumber());
+    b.append("]");
+    return b.toString();
   }
 
 }
