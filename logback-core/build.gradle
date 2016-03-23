@@ -1,6 +1,8 @@
 description = 'logback-android Core module'
 
 dependencies {
+  testCompile 'joda-time:joda-time:2.9.2'
+
   provided 'com.google.android:android:2.1.2'
 
   // For SMTPAppender
