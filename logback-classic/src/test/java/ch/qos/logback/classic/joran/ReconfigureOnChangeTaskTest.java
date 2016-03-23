@@ -196,6 +196,8 @@ public class ReconfigureOnChangeTaskTest {
 
         CountDownLatch doneLatch = waitForReconfigurationToBeDone(null);
         ReconfigureOnChangeTask oldRoct = getRegisteredReconfigureTask();
+        assertNotNull(oldRoct);
+        
         writeToFile(innerFile, "<included>\n<root>\n</included>");
         doneLatch.await();
 
@@ -207,7 +209,8 @@ public class ReconfigureOnChangeTaskTest {
         CountDownLatch secondDoneLatch = waitForReconfigurationToBeDone(oldRoct);
         writeToFile(innerFile, "<included><root level=\"ERROR\"/></included> ");
         secondDoneLatch.await();
-
+        
+        StatusPrinter.print(loggerContext);
         statusChecker.assertIsErrorFree();
         statusChecker.containsMatch(DETECTED_CHANGE_IN_CONFIGURATION_FILES);
     }
