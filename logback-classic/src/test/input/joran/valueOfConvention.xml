@@ -3,6 +3,7 @@
 		<file>build/test-output/valueOfConvention_${diff}/infoLog.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<fileNamePattern>build/test-output/valueOfConvention_${diff}/infoLogs.%d{yyyy-MM-dd}.log</fileNamePattern>
+
 			<maxHistory>30</maxHistory>
 			<totalSizeCap>3GB</totalSizeCap>
 		</rollingPolicy>
