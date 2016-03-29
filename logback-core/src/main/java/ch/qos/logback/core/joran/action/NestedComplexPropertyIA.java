@@ -167,8 +167,9 @@ public class NestedComplexPropertyIA extends ImplicitAction {
                 break;
             case AS_COMPLEX_PROPERTY_COLLECTION:
                 actionData.parentBean.addComplexProperty(tagName, actionData.getNestedComplexProperty());
-
                 break;
+            default:
+                addError("Unexpected aggregationType " + actionData.aggregationType);
             }
         }
     }
