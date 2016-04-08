@@ -13,6 +13,8 @@
  */
 package ch.qos.logback.classic.pattern;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -68,10 +70,22 @@ public class SyslogStartConverter extends ClassicConverter {
     sb.append(">");
     sb.append(computeTimeStampString(event.getTimeStamp()));
     sb.append(' ');
-    sb.append(localHostName);
+    sb.append(getLocalHostname());
     sb.append(' ');
 
     return sb.toString();
+  }
+
+  private String getLocalHostname() {
+    if (localHostName == null) {
+      try {
+        InetAddress addr = InetAddress.getLocalHost();
+        localHostName = addr.getHostName();
+      } catch (UnknownHostException uhe) {
+        localHostName = "UNKNOWN_LOCALHOST";
+      }
+    }
+    return localHostName;
   }
 
   String computeTimeStampString(long now) {

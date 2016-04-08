@@ -62,7 +62,11 @@ public class SyslogAppenderTest {
   }
 
   public void setMockServerAndConfigure(int expectedCount, boolean start)
-      throws InterruptedException {
+          throws InterruptedException {
+    setMockServerAndConfigure(expectedCount, true, "[%thread] %logger %msg");
+  }
+
+  public void setMockServerAndConfigure(int expectedCount, boolean start, String suffixPattern) throws InterruptedException {
     int port = RandomUtil.getRandomServerPort();
 
     mockServer = new MockSyslogServer(expectedCount, port);
@@ -74,7 +78,7 @@ public class SyslogAppenderTest {
     sa.setSyslogHost("localhost");
     sa.setFacility("MAIL");
     sa.setPort(port);
-    sa.setSuffixPattern("[%thread] %logger %msg");
+    sa.setSuffixPattern(suffixPattern);
     sa.setStackTracePattern("[%thread] foo "+CoreConstants.TAB);
     if (start) {
       sa.start();
@@ -114,7 +118,7 @@ public class SyslogAppenderTest {
 
   @Test
   public void suffixPatternWithTag() throws InterruptedException {
-    setMockServerAndConfigure(1, "test/something [%thread] %logger %msg");
+    setMockServerAndConfigure(1, true, "test/something [%thread] %logger %msg");
     String logMsg = "hello";
     logger.debug(logMsg);
 
