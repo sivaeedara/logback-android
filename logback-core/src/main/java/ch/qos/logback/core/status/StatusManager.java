@@ -42,13 +42,6 @@ public interface StatusManager {
   List<Status> getCopyOfStatusList();
 
   /**
-   * Return the highest level of all the statii.
-   *
-   * @return
-   */
-  //int getLevel();
-
-  /**
    * Return the number of status entries.
    *
    * @return entry count
@@ -56,20 +49,15 @@ public interface StatusManager {
   int getCount();
 
   /**
-   * Add a status listener.
-   * @param listener the status listener
-   */
-  
-  /**
-   * Add a status listener. The StatusManager may decide to skip installation if an 
+   * Add a status listener. The StatusManager may decide to skip installation if an
    * earlier instance was already installed.
-   * 
+   *
    * @param listener
    * @return true if actually added, false if skipped
    */
   boolean add(StatusListener listener);
 
-  /**);
+  /**
    * Remove a status listener.
    *
    * @param listener the status listener

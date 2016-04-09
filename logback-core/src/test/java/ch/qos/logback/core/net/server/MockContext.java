@@ -74,11 +74,7 @@ public class MockContext extends ContextBase {
       throw new UnsupportedOperationException();
     }
 
-    public void add(StatusListener listener) {
-      throw new UnsupportedOperationException();
-    }
-
-    public boolean addUniquely(StatusListener listener, Object obj) {
+    public boolean add(StatusListener listener) {
       throw new UnsupportedOperationException();
     }
 
