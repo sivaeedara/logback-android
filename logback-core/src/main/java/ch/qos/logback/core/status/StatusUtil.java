@@ -125,6 +125,8 @@ public class StatusUtil {
     return containsMatch(0, level, regex);
   }
 
+  // TODO: Move this to test/ as it's only used in test code.
+  // Double-check these other functions as well.
   public boolean containsMatch(String regex) {
     Pattern p = Pattern.compile(regex);
     for (Status status : sm.getCopyOfStatusList()) {
