@@ -102,13 +102,12 @@ public class SizeAndTimeBasedFNATP<E> extends TimeBasedFileNamingAndTriggeringPo
         }
     }
 
-
     InvocationGate invocationGate = new DefaultInvocationGate();
 
     public boolean isTriggeringEvent(File activeFile, final E event) {
 
         long time = getCurrentTime();
-        
+
         //  first check for roll-over based on time
         if (time >= nextCheck) {
             Date dateInElapsedPeriod = dateInCurrentPeriod;
@@ -125,7 +124,7 @@ public class SizeAndTimeBasedFNATP<E> extends TimeBasedFileNamingAndTriggeringPo
         }
 
         if (activeFile.length() >= maxFileSize.getSize()) {
-        
+
             elapsedPeriodsFileName = tbrp.fileNamePatternWCS.convertMultipleArguments(dateInCurrentPeriod, currentPeriodsCounter);
             currentPeriodsCounter++;
             return true;
@@ -133,7 +132,6 @@ public class SizeAndTimeBasedFNATP<E> extends TimeBasedFileNamingAndTriggeringPo
 
         return false;
     }
-
 
     @Override
     public String getCurrentPeriodsFileNameWithoutCompressionSuffix() {

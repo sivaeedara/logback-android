@@ -14,23 +14,23 @@
 package ch.qos.logback.core.util;
 
 public class CoreTestConstants {
-  /**
-   * The reference bogo instructions per second on
-   * Ceki's machine (Orion)
-   */
-  public static long REFERENCE_BIPS = 9000;
+    /**
+     * The reference bogo instructions per second on
+     * Ceki's machine (Orion)
+     */
+    public static long REFERENCE_BIPS = 9000;
 
-  public static final String BASE_DIR = "";
+    public static final String BASE_DIR = "";
 
-  public static final String TEST_DIR_PREFIX      = BASE_DIR + "src/test/";
-  public static final String TEST_INPUT_PREFIX    = TEST_DIR_PREFIX + "input/";
-  public static final String JORAN_INPUT_PREFIX   = TEST_INPUT_PREFIX + "joran/";
+    public static final String TEST_DIR_PREFIX = BASE_DIR + "src/test/";
+    public static final String TEST_INPUT_PREFIX = TEST_DIR_PREFIX + "input/";
+    public static final String JORAN_INPUT_PREFIX = TEST_INPUT_PREFIX + "joran/";
 
-  public static final String TARGET_DIR           = BASE_DIR + "build/";
-  public static final String OUTPUT_DIR_PREFIX    = TARGET_DIR + "test-output/";
+    public static final String TARGET_DIR = BASE_DIR + "build/";
+    public static final String OUTPUT_DIR_PREFIX = TARGET_DIR + "test-output/";
 
-  public static final String BASH_PATH_ON_CYGWIN = "c:/cygwin/bin/bash";
-  public static final String BASH_PATH_ON_LINUX = "bash";
+    public static final String BASH_PATH_ON_CYGWIN = "c:/cygwin/bin/bash";
+    public static final String BASH_PATH_ON_LINUX = "bash";
 
-  public static final String SLOW_JENKINS = "slowJenkins";
+    public static final String SLOW_JENKINS = "slowJenkins";
 }

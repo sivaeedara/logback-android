@@ -4,18 +4,18 @@ import ch.qos.logback.core.spi.LifeCycle;
 
 public class MockLifeCycleComponent implements LifeCycle {
 
-  private boolean started;
+    private boolean started;
 
-  public void start() {
-    started = true;
-  }
+    public void start() {
+        started = true;
+    }
 
-  public void stop() {
-    started = false;
-  }
+    public void stop() {
+        started = false;
+    }
 
-  public boolean isStarted() {
-    return started;
-  }
+    public boolean isStarted() {
+        return started;
+    }
 
 }

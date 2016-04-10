@@ -27,100 +27,94 @@ import ch.qos.logback.classic.util.TestHelper;
 
 public class PackagingDataCalculatorTest {
 
-  public void verify(ThrowableProxy tp) {
-    for (StackTraceElementProxy step : tp.getStackTraceElementProxyArray()) {
-      if (step != null) {
-        assertNotNull(step.getClassPackagingData());
-      }
+    public void verify(ThrowableProxy tp) {
+        for (StackTraceElementProxy step : tp.getStackTraceElementProxyArray()) {
+            if (step != null) {
+                assertNotNull(step.getClassPackagingData());
+            }
+        }
     }
-  }
 
-  @Test
-  public void smoke() throws Exception {
-    Throwable t = new Throwable("x");
-    ThrowableProxy tp = new ThrowableProxy(t);
-    PackagingDataCalculator pdc = tp.getPackagingDataCalculator();
-    pdc.calculate(tp);
-    verify(tp);
-    tp.fullDump();
-  }
-
-  @Test
-  public void nested() throws Exception {
-    Throwable t = TestHelper.makeNestedException(3);
-    ThrowableProxy tp = new ThrowableProxy(t);
-    PackagingDataCalculator pdc = tp.getPackagingDataCalculator();
-    pdc.calculate(tp);
-    verify(tp);
-  }
-
-  public void doCalculateClassPackagingData(
-      boolean withClassPackagingCalculation) {
-    try {
-      throw new Exception("testing");
-    } catch (Throwable e) {
-      ThrowableProxy tp = new ThrowableProxy(e);
-      if (withClassPackagingCalculation) {
+    @Test
+    public void smoke() throws Exception {
+        Throwable t = new Throwable("x");
+        ThrowableProxy tp = new ThrowableProxy(t);
         PackagingDataCalculator pdc = tp.getPackagingDataCalculator();
         pdc.calculate(tp);
-      }
+        verify(tp);
+        tp.fullDump();
     }
-  }
 
-  double loop(int len, boolean withClassPackagingCalculation) {
-    long start = System.nanoTime();
-    for (int i = 0; i < len; i++) {
-      doCalculateClassPackagingData(withClassPackagingCalculation);
+    @Test
+    public void nested() throws Exception {
+        Throwable t = TestHelper.makeNestedException(3);
+        ThrowableProxy tp = new ThrowableProxy(t);
+        PackagingDataCalculator pdc = tp.getPackagingDataCalculator();
+        pdc.calculate(tp);
+        verify(tp);
     }
-    return (1.0 * System.nanoTime() - start) / len / 1000;
-  }
 
-  @Ignore
-  @Test
-  public void perfTest() {
-    int len = 1000;
-    loop(len, false);
-    loop(len, true);
+    public void doCalculateClassPackagingData(boolean withClassPackagingCalculation) {
+        try {
+            throw new Exception("testing");
+        } catch (Throwable e) {
+            ThrowableProxy tp = new ThrowableProxy(e);
+            if (withClassPackagingCalculation) {
+                PackagingDataCalculator pdc = tp.getPackagingDataCalculator();
+                pdc.calculate(tp);
+            }
+        }
+    }
 
-    double d0 = loop(len, false);
-    System.out.println("without packaging info " + d0 + " microseconds");
+    double loop(int len, boolean withClassPackagingCalculation) {
+        long start = System.nanoTime();
+        for (int i = 0; i < len; i++) {
+            doCalculateClassPackagingData(withClassPackagingCalculation);
+        }
+        return (1.0 * System.nanoTime() - start) / len / 1000;
+    }
 
-    double d1 = loop(len, true);
-    System.out.println("with    packaging info " + d1 + " microseconds");
+    @Ignore
+    @Test
+    public void perfTest() {
+        int len = 1000;
+        loop(len, false);
+        loop(len, true);
 
-    // be more lenient with other JDKs, esp for logback-android,
-    // which computes packaging info by STEP (slow)
-    int slackFactor = 15;
+        double d0 = loop(len, false);
+        System.out.println("without packaging info " + d0 + " microseconds");
 
-    assertTrue("computing class packaging data (" + d1
-        + ") should have been less than " + slackFactor
-        + " times the time it takes to process an exception "
-        + (d0 * slackFactor), d0 * slackFactor > d1);
+        double d1 = loop(len, true);
+        System.out.println("with    packaging info " + d1 + " microseconds");
 
-  }
+        // be more lenient with other JDKs, esp for logback-android,
+        // which computes packaging info by STEP (slow)
+        int slackFactor = 15;
 
-  private ClassLoader makeBogusClassLoader() throws MalformedURLException {
-    ClassLoader currentClassLoader = this.getClass().getClassLoader();
-    return new BogusClassLoader(new URL[] {},
-        currentClassLoader);
-  }
+        assertTrue("computing class packaging data (" + d1 + ") should have been less than " + slackFactor + " times the time it takes to process an exception "
+                        + (d0 * slackFactor), d0 * slackFactor > d1);
 
-  @Test
-  // Test http://jira.qos.ch/browse/LBCLASSIC-125
-  public void noClassDefFoundError_LBCLASSIC_125Test()
-      throws MalformedURLException {
-    ClassLoader cl = (URLClassLoader) makeBogusClassLoader();
-    Thread.currentThread().setContextClassLoader(cl);
-    Throwable t = new Throwable("x");
-    ThrowableProxy tp = new ThrowableProxy(t);
-    StackTraceElementProxy[] stepArray = tp.getStackTraceElementProxyArray();
-    StackTraceElement bogusSTE = new StackTraceElement("com.Bogus", "myMethod",
-        "myFile", 12);
-    stepArray[0] = new StackTraceElementProxy(bogusSTE);
-    PackagingDataCalculator pdc = tp.getPackagingDataCalculator();
-    // NoClassDefFoundError should be caught
-    pdc.calculate(tp);
+    }
 
-  }
+    private ClassLoader makeBogusClassLoader() throws MalformedURLException {
+        ClassLoader currentClassLoader = this.getClass().getClassLoader();
+        return new BogusClassLoader(new URL[] {}, currentClassLoader);
+    }
+
+    @Test
+    // Test http://jira.qos.ch/browse/LBCLASSIC-125
+    public void noClassDefFoundError_LBCLASSIC_125Test() throws MalformedURLException {
+        ClassLoader cl = (URLClassLoader) makeBogusClassLoader();
+        Thread.currentThread().setContextClassLoader(cl);
+        Throwable t = new Throwable("x");
+        ThrowableProxy tp = new ThrowableProxy(t);
+        StackTraceElementProxy[] stepArray = tp.getStackTraceElementProxyArray();
+        StackTraceElement bogusSTE = new StackTraceElement("com.Bogus", "myMethod", "myFile", 12);
+        stepArray[0] = new StackTraceElementProxy(bogusSTE);
+        PackagingDataCalculator pdc = tp.getPackagingDataCalculator();
+        // NoClassDefFoundError should be caught
+        pdc.calculate(tp);
+
+    }
 
 }

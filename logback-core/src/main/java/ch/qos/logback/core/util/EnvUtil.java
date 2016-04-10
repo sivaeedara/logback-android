@@ -21,52 +21,50 @@ import java.util.List;
  */
 public class EnvUtil {
 
-  /**
-   * Heuristically determines whether the current OS is Android
-   */
-  static public boolean isAndroidOS() {
-    String osname = OptionHelper.getSystemProperty("os.name");
-    String root = OptionHelper.getEnv("ANDROID_ROOT");
-    String data = OptionHelper.getEnv("ANDROID_DATA");
+    /**
+     * Heuristically determines whether the current OS is Android
+     */
+    static public boolean isAndroidOS() {
+        String osname = OptionHelper.getSystemProperty("os.name");
+        String root = OptionHelper.getEnv("ANDROID_ROOT");
+        String data = OptionHelper.getEnv("ANDROID_DATA");
 
-    return osname != null && osname.contains("Linux") &&
-        root != null && root.contains("/system") &&
-        data != null && data.contains("/data");
-  }
-
-  static private boolean isJDK_N_OrHigher(int n) {
-    List<String> versionList = new ArrayList<String>();
-    // this code should work at least until JDK 10 (assuming n parameter is
-    // always 6 or more)
-    for (int i = 0; i < 5; i++) {
-      versionList.add("1." + (n + i));
+        return osname != null && osname.contains("Linux") && root != null && root.contains("/system") && data != null && data.contains("/data");
     }
 
-    String javaVersion = System.getProperty("java.version");
-    if (javaVersion == null) {
-      return false;
+    static private boolean isJDK_N_OrHigher(int n) {
+        List<String> versionList = new ArrayList<String>();
+        // this code should work at least until JDK 10 (assuming n parameter is
+        // always 6 or more)
+        for (int i = 0; i < 5; i++) {
+            versionList.add("1." + (n + i));
+        }
+
+        String javaVersion = System.getProperty("java.version");
+        if (javaVersion == null) {
+            return false;
+        }
+        for (String v : versionList) {
+            if (javaVersion.startsWith(v))
+                return true;
+        }
+        return false;
     }
-    for (String v : versionList) {
-      if (javaVersion.startsWith(v))
-        return true;
+
+    static public boolean isJDK5() {
+        return isJDK_N_OrHigher(5);
     }
-    return false;
-  }
 
-  static public boolean isJDK5() {
-    return isJDK_N_OrHigher(5);
-  }
+    static public boolean isJDK6OrHigher() {
+        return isJDK_N_OrHigher(6);
+    }
 
-  static public boolean isJDK6OrHigher() {
-    return isJDK_N_OrHigher(6);
-  }
+    static public boolean isJDK7OrHigher() {
+        return isJDK_N_OrHigher(7);
+    }
 
-  static public boolean isJDK7OrHigher() {
-    return isJDK_N_OrHigher(7);
-  }
-
-  static public boolean isWindows() {
-    String os = System.getProperty("os.name");
-    return os.startsWith("Windows");
-  }
+    static public boolean isWindows() {
+        String os = System.getProperty("os.name");
+        return os.startsWith("Windows");
+    }
 }

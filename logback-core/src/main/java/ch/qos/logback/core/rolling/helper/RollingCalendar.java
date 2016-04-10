@@ -71,7 +71,6 @@ public class RollingCalendar extends GregorianCalendar {
     public PeriodicityType computePeriodicityType() {
 
         GregorianCalendar calendar = new GregorianCalendar(GMT_TIMEZONE, Locale.getDefault());
-                        
 
         // set sate to 1970-01-01 00:00:00 GMT
         Date epoch = new Date(0);
@@ -104,13 +103,13 @@ public class RollingCalendar extends GregorianCalendar {
 
         case TOP_OF_DAY:
             // EE or uu
-            if(collision(7 * MILLIS_IN_ONE_DAY))
+            if (collision(7 * MILLIS_IN_ONE_DAY))
                 return false;
             // isolated dd
-            if(collision(31 * MILLIS_IN_ONE_DAY))
+            if (collision(31 * MILLIS_IN_ONE_DAY))
                 return false;
             // DD
-            if(collision(365 * MILLIS_IN_ONE_DAY))
+            if (collision(365 * MILLIS_IN_ONE_DAY))
                 return false;
             return true;
         case TOP_OF_WEEK:
@@ -182,9 +181,9 @@ public class RollingCalendar extends GregorianCalendar {
 
         Date startFloored = getsStartOfCurrentPeriod(start);
         Date endFloored = getsStartOfCurrentPeriod(end);
-        
+
         long diff = endFloored.getTime() - startFloored.getTime();
-        
+
         switch (periodicityType) {
 
         case TOP_OF_MILLISECOND:
@@ -197,7 +196,7 @@ public class RollingCalendar extends GregorianCalendar {
             return (int) diff / CoreConstants.MILLIS_IN_ONE_HOUR;
         case TOP_OF_DAY:
             // add 1 hours in compensation of daylight savings time
-            diff += CoreConstants.MILLIS_IN_ONE_HOUR; 
+            diff += CoreConstants.MILLIS_IN_ONE_HOUR;
             return diff / CoreConstants.MILLIS_IN_ONE_DAY;
         case TOP_OF_WEEK:
             return diff / CoreConstants.MILLIS_IN_ONE_WEEK;
@@ -223,7 +222,7 @@ public class RollingCalendar extends GregorianCalendar {
     static private Date innerGetEndOfThisPeriod(Calendar cal, PeriodicityType periodicityType, Date now) {
         return innerGetEndOfNextNthPeriod(cal, periodicityType, now, 1);
     }
-    
+
     static private Date innerGetEndOfNextNthPeriod(Calendar cal, PeriodicityType periodicityType, Date now, int numPeriods) {
         cal.setTime(now);
         switch (periodicityType) {
@@ -265,7 +264,7 @@ public class RollingCalendar extends GregorianCalendar {
             cal.set(Calendar.MILLISECOND, 0);
             cal.add(Calendar.WEEK_OF_YEAR, numPeriods);
             break;
-            
+
         case TOP_OF_MONTH:
             cal.set(Calendar.DATE, 1);
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -289,7 +288,7 @@ public class RollingCalendar extends GregorianCalendar {
     public Date getNextTriggeringDate(Date now) {
         return getEndOfNextNthPeriod(now, 1);
     }
-    
+
     public Date getsStartOfCurrentPeriod(long now) {
         Calendar aCal = Calendar.getInstance(getTimeZone());
         aCal.setTimeInMillis(now);

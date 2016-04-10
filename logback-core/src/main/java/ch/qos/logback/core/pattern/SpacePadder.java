@@ -15,52 +15,52 @@ package ch.qos.logback.core.pattern;
 
 public class SpacePadder {
 
-  final static String[] SPACES = { " ", "  ", "    ", "        ", // 1,2,4,8
-      // spaces
-      "                ", // 16 spaces
-      "                                " }; // 32 spaces
+    final static String[] SPACES = { " ", "  ", "    ", "        ", // 1,2,4,8
+            // spaces
+            "                ", // 16 spaces
+            "                                " }; // 32 spaces
 
-  final static public void leftPad(StringBuilder buf, String s, int desiredLength) {
-    int actualLen = 0;
-    if (s != null) {
-      actualLen = s.length();
-    }
-    if (actualLen < desiredLength) {
-      spacePad(buf, desiredLength - actualLen);
-    }
-    if (s != null) {
-      buf.append(s);
-    }
-  }
-
-  final static public void rightPad(StringBuilder buf, String s, int desiredLength) {
-    int actualLen = 0;
-    if (s != null) {
-      actualLen = s.length();
-    }
-    if (s != null) {
-      buf.append(s);
-    }
-    if (actualLen < desiredLength) {
-      spacePad(buf, desiredLength - actualLen);
-    }
-  }
-
-  /**
-   * Fast space padding method.
-   * @param sbuf buffer to modify
-   * @param length number of spaces to add
-   */
-  final static public void spacePad(StringBuilder sbuf, int length) {
-    while (length >= 32) {
-      sbuf.append(SPACES[5]);
-      length -= 32;
+    final static public void leftPad(StringBuilder buf, String s, int desiredLength) {
+        int actualLen = 0;
+        if (s != null) {
+            actualLen = s.length();
+        }
+        if (actualLen < desiredLength) {
+            spacePad(buf, desiredLength - actualLen);
+        }
+        if (s != null) {
+            buf.append(s);
+        }
     }
 
-    for (int i = 4; i >= 0; i--) {
-      if ((length & (1 << i)) != 0) {
-        sbuf.append(SPACES[i]);
-      }
+    final static public void rightPad(StringBuilder buf, String s, int desiredLength) {
+        int actualLen = 0;
+        if (s != null) {
+            actualLen = s.length();
+        }
+        if (s != null) {
+            buf.append(s);
+        }
+        if (actualLen < desiredLength) {
+            spacePad(buf, desiredLength - actualLen);
+        }
     }
-  }
+
+    /**
+     * Fast space padding method.
+     * @param sbuf buffer to modify
+     * @param length number of spaces to add
+     */
+    final static public void spacePad(StringBuilder sbuf, int length) {
+        while (length >= 32) {
+            sbuf.append(SPACES[5]);
+            length -= 32;
+        }
+
+        for (int i = 4; i >= 0; i--) {
+            if ((length & (1 << i)) != 0) {
+                sbuf.append(SPACES[i]);
+            }
+        }
+    }
 }

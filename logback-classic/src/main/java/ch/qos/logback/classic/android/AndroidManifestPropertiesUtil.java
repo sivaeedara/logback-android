@@ -34,60 +34,60 @@ import ch.qos.logback.core.util.Loader;
  */
 public class AndroidManifestPropertiesUtil {
 
-  /**
-   * Sets context properties specific to this application. This reads the
-   * application's AndroidManifest.xml for its manifest attributes. If the
-   * context already contains properties for the manifest attributes, then
-   * nothing is done.
-   *
-   * @param context context to modify
-   * @throws JoranException an error occurred while reading AndroidManifest.xml
-   */
-  public static void setAndroidProperties(Context context) throws JoranException {
+    /**
+     * Sets context properties specific to this application. This reads the
+     * application's AndroidManifest.xml for its manifest attributes. If the
+     * context already contains properties for the manifest attributes, then
+     * nothing is done.
+     *
+     * @param context context to modify
+     * @throws JoranException an error occurred while reading AndroidManifest.xml
+     */
+    public static void setAndroidProperties(Context context) throws JoranException {
 
-    // filter for dummy element to ignore everything...we're just after the manifest attributes
-    ASaxEventRecorder rec = new ASaxEventRecorder();
-    rec.setFilter("-");
-    rec.setAttributeWatch("manifest");
+        // filter for dummy element to ignore everything...we're just after the manifest attributes
+        ASaxEventRecorder rec = new ASaxEventRecorder();
+        rec.setFilter("-");
+        rec.setAttributeWatch("manifest");
 
-    StatusManager sm = context.getStatusManager();
+        StatusManager sm = context.getStatusManager();
 
-    InputStream stream = Loader.getClassLoaderOfObject(context).getResourceAsStream("AndroidManifest.xml");
-    if (stream == null) {
-      sm.add(new WarnStatus("Could not find AndroidManifest.xml", context));
-      return;
+        InputStream stream = Loader.getClassLoaderOfObject(context).getResourceAsStream("AndroidManifest.xml");
+        if (stream == null) {
+            sm.add(new WarnStatus("Could not find AndroidManifest.xml", context));
+            return;
+        }
+
+        try {
+            rec.recordEvents(stream);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+            }
+        }
+
+        // set property for SD card path (only if mounted)
+        context.putProperty(CoreConstants.EXT_DIR_KEY, CommonPathUtil.getMountedExternalStorageDirectoryPath());
+
+        // set properties for specific manifest attributes from AndroidManifest.xml
+        Map<String, String> manifestAttrs = rec.getAttributeWatchValues();
+        for (String key : manifestAttrs.keySet()) {
+            if (key.equals("android:versionName")) {
+                context.putProperty(CoreConstants.VERSION_NAME_KEY, manifestAttrs.get(key));
+            } else if (key.equals("android:versionCode")) {
+                context.putProperty(CoreConstants.VERSION_CODE_KEY, manifestAttrs.get(key));
+            } else if (key.equals("package")) {
+                context.putProperty(CoreConstants.PACKAGE_NAME_KEY, manifestAttrs.get(key));
+            }
+        }
+
+        // set data directory based on package name from manifest
+        String packageName = manifestAttrs.get("package");
+        if (packageName != null && packageName.length() > 0) {
+            context.putProperty(CoreConstants.DATA_DIR_KEY, CommonPathUtil.getFilesDirectoryPath(packageName));
+        } else {
+            sm.add(new WarnStatus("Package name not found. Some properties cannot be set.", context));
+        }
     }
-
-    try {
-      rec.recordEvents(stream);
-    } finally {
-      try {
-        stream.close();
-      } catch (IOException e) {
-      }
-    }
-
-    // set property for SD card path (only if mounted)
-    context.putProperty(CoreConstants.EXT_DIR_KEY, CommonPathUtil.getMountedExternalStorageDirectoryPath());
-
-    // set properties for specific manifest attributes from AndroidManifest.xml
-    Map<String,String> manifestAttrs = rec.getAttributeWatchValues();
-    for (String key : manifestAttrs.keySet()) {
-      if (key.equals("android:versionName")) {
-        context.putProperty(CoreConstants.VERSION_NAME_KEY, manifestAttrs.get(key));
-      } else if (key.equals("android:versionCode")) {
-        context.putProperty(CoreConstants.VERSION_CODE_KEY, manifestAttrs.get(key));
-      } else if (key.equals("package")) {
-        context.putProperty(CoreConstants.PACKAGE_NAME_KEY, manifestAttrs.get(key));
-      }
-    }
-
-    // set data directory based on package name from manifest
-    String packageName = manifestAttrs.get("package");
-    if (packageName != null && packageName.length() > 0) {
-      context.putProperty(CoreConstants.DATA_DIR_KEY, CommonPathUtil.getFilesDirectoryPath(packageName));
-    } else {
-      sm.add(new WarnStatus("Package name not found. Some properties cannot be set.", context));
-    }
-  }
 }

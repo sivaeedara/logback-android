@@ -33,55 +33,54 @@ import ch.qos.logback.core.joran.spi.JoranException;
  */
 public class FindIncludeAction extends IncludeAction {
 
-  private static final int EVENT_OFFSET = 1;
+    private static final int EVENT_OFFSET = 1;
 
-  public FindIncludeAction() {
-    setEventOffset(EVENT_OFFSET);
-  }
+    public FindIncludeAction() {
+        setEventOffset(EVENT_OFFSET);
+    }
 
-  @Override
-  public void begin(InterpretationContext ec, String name, Attributes attributes)
-          throws ActionException {
-    // nothing to do
-  }
+    @Override
+    public void begin(InterpretationContext ec, String name, Attributes attributes) throws ActionException {
+        // nothing to do
+    }
 
-  @Override
-  public void end(InterpretationContext ic, String name) throws ActionException {
-    if (!ic.isEmpty() && (ic.peekObject() instanceof ConditionalIncludeAction.State)) {
-      ConditionalIncludeAction.State state = (ConditionalIncludeAction.State)ic.popObject();
-      URL url = state.getUrl();
-      if (url != null) {
-        addInfo("Path found [" + url.toString() + "]");
+    @Override
+    public void end(InterpretationContext ic, String name) throws ActionException {
+        if (!ic.isEmpty() && (ic.peekObject() instanceof ConditionalIncludeAction.State)) {
+            ConditionalIncludeAction.State state = (ConditionalIncludeAction.State) ic.popObject();
+            URL url = state.getUrl();
+            if (url != null) {
+                addInfo("Path found [" + url.toString() + "]");
 
-        try {
-          processInclude(ic, url);
-        } catch (JoranException e) {
-          addError("Failed to process include [" + url.toString() + "]", e);
+                try {
+                    processInclude(ic, url);
+                } catch (JoranException e) {
+                    addError("Failed to process include [" + url.toString() + "]", e);
+                }
+            } else {
+                addInfo("No paths found from includes");
+            }
         }
-      } else {
-        addInfo("No paths found from includes");
-      }
     }
-  }
 
-  /**
-   * Creates a {@link SaxEventRecorder} based on the input stream
-   * @return the newly created recorder
-   */
-  @Override
-  protected SaxEventRecorder createRecorder(InputStream in, URL url) {
-    SaxEventRecorder recorder;
+    /**
+     * Creates a {@link SaxEventRecorder} based on the input stream
+     * @return the newly created recorder
+     */
+    @Override
+    protected SaxEventRecorder createRecorder(InputStream in, URL url) {
+        SaxEventRecorder recorder;
 
-    // if the stream URL is named AndroidManifest.xml, assume it's
-    // the manifest in binary XML
-    if (url.toString().endsWith("AndroidManifest.xml")) {
-      // create an AXml parser that only takes XML inside a logback element
-      ASaxEventRecorder rec = new ASaxEventRecorder();
-      rec.setFilter("logback");
-      recorder = rec;
-    } else {
-      recorder = new SaxEventRecorder(getContext());
+        // if the stream URL is named AndroidManifest.xml, assume it's
+        // the manifest in binary XML
+        if (url.toString().endsWith("AndroidManifest.xml")) {
+            // create an AXml parser that only takes XML inside a logback element
+            ASaxEventRecorder rec = new ASaxEventRecorder();
+            rec.setFilter("logback");
+            recorder = rec;
+        } else {
+            recorder = new SaxEventRecorder(getContext());
+        }
+        return recorder;
     }
-    return recorder;
-  }
 }

@@ -18,9 +18,9 @@ import java.io.OutputStream;
 
 public class NOPOutputStream extends OutputStream {
 
-  @Override
-  public void write(int b) throws IOException {
-    // do nothing
-  }
+    @Override
+    public void write(int b) throws IOException {
+        // do nothing
+    }
 
 }

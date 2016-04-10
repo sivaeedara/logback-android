@@ -30,29 +30,27 @@ import ch.qos.logback.core.AppenderBase;
  */
 public class MockAppender extends AppenderBase<ILoggingEvent> {
 
-  private final Lock lock = new ReentrantLock();
-  private final Condition appendCondition = lock.newCondition();
-  private final BlockingQueue<ILoggingEvent> events =
-      new LinkedBlockingQueue<ILoggingEvent>();
+    private final Lock lock = new ReentrantLock();
+    private final Condition appendCondition = lock.newCondition();
+    private final BlockingQueue<ILoggingEvent> events = new LinkedBlockingQueue<ILoggingEvent>();
 
-  @Override
-  protected void append(ILoggingEvent eventObject) {
-    lock.lock();
-    try {
-      events.offer(eventObject);
-      appendCondition.signalAll();
+    @Override
+    protected void append(ILoggingEvent eventObject) {
+        lock.lock();
+        try {
+            events.offer(eventObject);
+            appendCondition.signalAll();
+        } finally {
+            lock.unlock();
+        }
     }
-    finally {
-      lock.unlock();
+
+    public ILoggingEvent awaitAppend(long delay) throws InterruptedException {
+        return events.poll(delay, TimeUnit.MILLISECONDS);
     }
-  }
 
-  public ILoggingEvent awaitAppend(long delay) throws InterruptedException {
-    return events.poll(delay, TimeUnit.MILLISECONDS);
-  }
-
-  public ILoggingEvent getLastEvent() {
-    return events.peek();
-  }
+    public ILoggingEvent getLastEvent() {
+        return events.peek();
+    }
 
 }

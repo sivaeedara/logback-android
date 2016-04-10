@@ -26,80 +26,80 @@ import ch.qos.logback.core.net.SyslogAppenderBase;
 
 public class SyslogStartConverter extends ClassicConverter {
 
-  long lastTimestamp = -1;
-  String timesmapStr = null;
-  SimpleDateFormat simpleMonthFormat;
-  SimpleDateFormat simpleTimeFormat;
-  private final Calendar calendar  = Calendar.getInstance(Locale.US);
+    long lastTimestamp = -1;
+    String timesmapStr = null;
+    SimpleDateFormat simpleMonthFormat;
+    SimpleDateFormat simpleTimeFormat;
+    private final Calendar calendar = Calendar.getInstance(Locale.US);
 
-  String localHostName;
-  int facility;
+    String localHostName;
+    int facility;
 
-  public void start() {
-    int errorCount = 0;
-    
-    String facilityStr = getFirstOption();
-    if (facilityStr == null) {
-      addError("was expecting a facility string as an option");
-      return;
+    public void start() {
+        int errorCount = 0;
+
+        String facilityStr = getFirstOption();
+        if (facilityStr == null) {
+            addError("was expecting a facility string as an option");
+            return;
+        }
+
+        facility = SyslogAppenderBase.facilityStringToint(facilityStr);
+
+        try {
+            // hours should be in 0-23, see also http://jira.qos.ch/browse/LBCLASSIC-48
+            simpleMonthFormat = new SimpleDateFormat("MMM", Locale.US);
+            simpleTimeFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
+        } catch (IllegalArgumentException e) {
+            addError("Could not instantiate SimpleDateFormat", e);
+            errorCount++;
+        }
+
+        if (errorCount == 0) {
+            super.start();
+        }
     }
 
-    facility = SyslogAppenderBase.facilityStringToint(facilityStr);
+    public String convert(ILoggingEvent event) {
+        StringBuilder sb = new StringBuilder();
 
-    try {
-      // hours should be in 0-23, see also http://jira.qos.ch/browse/LBCLASSIC-48
-      simpleMonthFormat = new SimpleDateFormat("MMM", Locale.US);
-      simpleTimeFormat = new SimpleDateFormat("HH:mm:ss", Locale.US);
-    } catch (IllegalArgumentException e) {
-      addError("Could not instantiate SimpleDateFormat", e);
-      errorCount++;
+        int pri = facility + LevelToSyslogSeverity.convert(event);
+
+        sb.append("<");
+        sb.append(pri);
+        sb.append(">");
+        sb.append(computeTimeStampString(event.getTimeStamp()));
+        sb.append(' ');
+        sb.append(getLocalHostname());
+        sb.append(' ');
+
+        return sb.toString();
     }
 
-    if(errorCount == 0) {
-      super.start();
+    private String getLocalHostname() {
+        if (localHostName == null) {
+            try {
+                InetAddress addr = InetAddress.getLocalHost();
+                localHostName = addr.getHostName();
+            } catch (UnknownHostException uhe) {
+                localHostName = "UNKNOWN_LOCALHOST";
+            }
+        }
+        return localHostName;
     }
-  }
 
-  public String convert(ILoggingEvent event) {
-    StringBuilder sb = new StringBuilder();
-
-    int pri = facility + LevelToSyslogSeverity.convert(event);
-  
-    sb.append("<");
-    sb.append(pri);
-    sb.append(">");
-    sb.append(computeTimeStampString(event.getTimeStamp()));
-    sb.append(' ');
-    sb.append(getLocalHostname());
-    sb.append(' ');
-
-    return sb.toString();
-  }
-
-  private String getLocalHostname() {
-    if (localHostName == null) {
-      try {
-        InetAddress addr = InetAddress.getLocalHost();
-        localHostName = addr.getHostName();
-      } catch (UnknownHostException uhe) {
-        localHostName = "UNKNOWN_LOCALHOST";
-      }
+    String computeTimeStampString(long now) {
+        synchronized (this) {
+            // Since the formatted output is only precise to the second, we can use the same cached string if the current
+            // second is the same (stripping off the milliseconds).
+            if ((now / 1000) != lastTimestamp) {
+                lastTimestamp = now / 1000;
+                Date nowDate = new Date(now);
+                calendar.setTime(nowDate);
+                timesmapStr = String.format("%s %2d %s", simpleMonthFormat.format(nowDate), calendar.get(Calendar.DAY_OF_MONTH),
+                                simpleTimeFormat.format(nowDate));
+            }
+            return timesmapStr;
+        }
     }
-    return localHostName;
-  }
-
-  String computeTimeStampString(long now) {
-    synchronized (this) {
-      // Since the formatted output is only precise to the second, we can use the same cached string if the current
-      // second is the same (stripping off the milliseconds).
-      if ((now / 1000) != lastTimestamp) {
-        lastTimestamp = now / 1000;
-        Date nowDate = new Date(now);
-        calendar.setTime(nowDate);
-        timesmapStr = String.format("%s %2d %s", simpleMonthFormat.format(nowDate),
-        calendar.get(Calendar.DAY_OF_MONTH), simpleTimeFormat.format(nowDate));
-      }
-      return timesmapStr;
-    }
-  }  
 }

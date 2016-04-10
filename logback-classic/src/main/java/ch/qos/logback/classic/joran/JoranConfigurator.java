@@ -34,45 +34,40 @@ import ch.qos.logback.core.joran.spi.RuleStore;
  */
 public class JoranConfigurator extends JoranConfiguratorBase {
 
-  @Override
-  public void addInstanceRules(RuleStore rs) {
-    // parent rules already added
-    super.addInstanceRules(rs);
+    @Override
+    public void addInstanceRules(RuleStore rs) {
+        // parent rules already added
+        super.addInstanceRules(rs);
 
-    rs.addRule(new ElementSelector("configuration"), new ConfigurationAction());
+        rs.addRule(new ElementSelector("configuration"), new ConfigurationAction());
 
-    rs.addRule(new ElementSelector("configuration/contextName"),
-        new ContextNameAction());
-      rs.addRule(new ElementSelector("configuration/contextListener"),
-        new LoggerContextListenerAction());
+        rs.addRule(new ElementSelector("configuration/contextName"), new ContextNameAction());
+        rs.addRule(new ElementSelector("configuration/contextListener"), new LoggerContextListenerAction());
 
-    rs.addRule(new ElementSelector("configuration/appender/sift"), new SiftAction());
-    rs.addRule(new ElementSelector("configuration/appender/sift/*"), new NOPAction());
+        rs.addRule(new ElementSelector("configuration/appender/sift"), new SiftAction());
+        rs.addRule(new ElementSelector("configuration/appender/sift/*"), new NOPAction());
 
-    rs.addRule(new ElementSelector("configuration/logger"), new LoggerAction());
-    rs.addRule(new ElementSelector("configuration/logger/level"), new LevelAction());
+        rs.addRule(new ElementSelector("configuration/logger"), new LoggerAction());
+        rs.addRule(new ElementSelector("configuration/logger/level"), new LevelAction());
 
-    rs.addRule(new ElementSelector("configuration/root"), new RootLoggerAction());
-    rs.addRule(new ElementSelector("configuration/root/level"), new LevelAction());
-    rs.addRule(new ElementSelector("configuration/logger/appender-ref"),
-        new AppenderRefAction<ILoggingEvent>());
-    rs.addRule(new ElementSelector("configuration/root/appender-ref"),
+        rs.addRule(new ElementSelector("configuration/root"), new RootLoggerAction());
+        rs.addRule(new ElementSelector("configuration/root/level"), new LevelAction());
+        rs.addRule(new ElementSelector("configuration/logger/appender-ref"), new AppenderRefAction<ILoggingEvent>());
+        rs.addRule(new ElementSelector("configuration/root/appender-ref"),
 
-        new AppenderRefAction<ILoggingEvent>());
+                        new AppenderRefAction<ILoggingEvent>());
 
-    rs.addRule(new ElementSelector("configuration/include"), new IncludeAction());
+        rs.addRule(new ElementSelector("configuration/include"), new IncludeAction());
 
-    rs.addRule(new ElementSelector("configuration/includes"), new FindIncludeAction());
-    rs.addRule(new ElementSelector("configuration/includes/include"), new ConditionalIncludeAction());
+        rs.addRule(new ElementSelector("configuration/includes"), new FindIncludeAction());
+        rs.addRule(new ElementSelector("configuration/includes/include"), new ConditionalIncludeAction());
 
-    rs.addRule(new ElementSelector("configuration/receiver"),
-        new ReceiverAction());
-  }
+        rs.addRule(new ElementSelector("configuration/receiver"), new ReceiverAction());
+    }
 
-  @Override
-  protected void addDefaultNestedComponentRegistryRules(
-      DefaultNestedComponentRegistry registry) {
-    DefaultNestedComponentRules.addDefaultNestedComponentRegistryRules(registry);
-  }
+    @Override
+    protected void addDefaultNestedComponentRegistryRules(DefaultNestedComponentRegistry registry) {
+        DefaultNestedComponentRules.addDefaultNestedComponentRegistryRules(registry);
+    }
 
 }

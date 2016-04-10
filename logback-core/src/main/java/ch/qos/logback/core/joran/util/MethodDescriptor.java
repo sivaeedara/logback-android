@@ -22,19 +22,19 @@ import java.lang.reflect.Method;
  * @author Anthony K. Trinh
  */
 public class MethodDescriptor {
-  private String name;
-  private Method method;
+    private String name;
+    private Method method;
 
-  public MethodDescriptor(String name, Method method) {
-    this.name = name;
-    this.method = method;
-  }
+    public MethodDescriptor(String name, Method method) {
+        this.name = name;
+        this.method = method;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public Method getMethod() {
-    return method;
-  }
+    public Method getMethod() {
+        return method;
+    }
 }

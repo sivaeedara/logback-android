@@ -29,7 +29,7 @@ public class IntrospectionException extends RuntimeException {
     public IntrospectionException(String message) {
         super(message);
     }
-    
+
     public IntrospectionException(Exception ex) {
         super(ex);
     }

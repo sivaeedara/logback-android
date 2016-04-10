@@ -47,33 +47,33 @@ import ch.qos.logback.core.status.StatusManager;
  */
 public class BasicLogcatConfigurator {
 
-  private BasicLogcatConfigurator() {
-  }
-
-  public static void configure(LoggerContext lc) {
-    StatusManager sm = lc.getStatusManager();
-    if (sm != null) {
-      sm.add(new InfoStatus("Setting up default configuration.", lc));
+    private BasicLogcatConfigurator() {
     }
-    LogcatAppender appender = new LogcatAppender();
-    appender.setContext(lc);
-    appender.setName("logcat");
 
-    // We don't need a trailing new-line character in the pattern
-    // because logcat automatically appends one for us.
-    PatternLayoutEncoder pl = new PatternLayoutEncoder();
-    pl.setContext(lc);
-    pl.setPattern("%msg");
-    pl.start();
+    public static void configure(LoggerContext lc) {
+        StatusManager sm = lc.getStatusManager();
+        if (sm != null) {
+            sm.add(new InfoStatus("Setting up default configuration.", lc));
+        }
+        LogcatAppender appender = new LogcatAppender();
+        appender.setContext(lc);
+        appender.setName("logcat");
 
-    appender.setEncoder(pl);
-    appender.start();
-    Logger rootLogger = lc.getLogger(Logger.ROOT_LOGGER_NAME);
-    rootLogger.addAppender(appender);
-  }
+        // We don't need a trailing new-line character in the pattern
+        // because logcat automatically appends one for us.
+        PatternLayoutEncoder pl = new PatternLayoutEncoder();
+        pl.setContext(lc);
+        pl.setPattern("%msg");
+        pl.start();
 
-  public static void configureDefaultContext() {
-    LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-    configure(lc);
-  }
+        appender.setEncoder(pl);
+        appender.start();
+        Logger rootLogger = lc.getLogger(Logger.ROOT_LOGGER_NAME);
+        rootLogger.addAppender(appender);
+    }
+
+    public static void configureDefaultContext() {
+        LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+        configure(lc);
+    }
 }

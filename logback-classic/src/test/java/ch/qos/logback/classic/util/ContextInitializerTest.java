@@ -13,7 +13,6 @@
  */
 package ch.qos.logback.classic.util;
 
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -39,66 +38,65 @@ import ch.qos.logback.core.status.TrivialStatusListener;
 
 public class ContextInitializerTest {
 
-  LoggerContext loggerContext = new LoggerContext();
-  Logger root = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
+    LoggerContext loggerContext = new LoggerContext();
+    Logger root = loggerContext.getLogger(Logger.ROOT_LOGGER_NAME);
 
-  @Before
-  public void setUp() throws Exception {
-  }
-
-  @After
-  public void tearDown() throws Exception {
-    System.clearProperty(ContextInitializer.CONFIG_FILE_PROPERTY);
-    System.clearProperty(CoreConstants.STATUS_LISTENER_CLASS);
-  }
-
-
-  @Test
-  @Ignore
-  // this test works only if logback-test.xml or logback.xml files are on the classpath.
-  // However, this is something we try to avoid in order to simplify the life
-  // of users trying to follow the manual and logback-examples from an IDE
-  public void reset() throws JoranException {
-    {
-      new ContextInitializer(loggerContext).autoConfig();
-      Appender<ILoggingEvent> appender = root.getAppender("STDOUT");
-      assertNotNull(appender);
-      assertTrue(appender instanceof ConsoleAppender);
+    @Before
+    public void setUp() throws Exception {
     }
-    {
-      loggerContext.stop();
-      Appender<ILoggingEvent> appender = root.getAppender("STDOUT");
-      assertNull(appender);
+
+    @After
+    public void tearDown() throws Exception {
+        System.clearProperty(ContextInitializer.CONFIG_FILE_PROPERTY);
+        System.clearProperty(CoreConstants.STATUS_LISTENER_CLASS);
     }
-  }
 
-  @Test
-  public void autoConfigFromSystemProperties() throws JoranException  {
-    doAutoConfigFromSystemProperties(ClassicTestConstants.INPUT_PREFIX + "autoConfig.xml");
-    doAutoConfigFromSystemProperties("autoConfigAsResource.xml");
-    // test passing a URL. note the relative path syntax with file:src/test/...
-    doAutoConfigFromSystemProperties("file:"+ClassicTestConstants.INPUT_PREFIX + "autoConfig.xml");
-  }
+    @Test
+    @Ignore
+    // this test works only if logback-test.xml or logback.xml files are on the classpath.
+    // However, this is something we try to avoid in order to simplify the life
+    // of users trying to follow the manual and logback-examples from an IDE
+    public void reset() throws JoranException {
+        {
+            new ContextInitializer(loggerContext).autoConfig();
+            Appender<ILoggingEvent> appender = root.getAppender("STDOUT");
+            assertNotNull(appender);
+            assertTrue(appender instanceof ConsoleAppender);
+        }
+        {
+            loggerContext.stop();
+            Appender<ILoggingEvent> appender = root.getAppender("STDOUT");
+            assertNull(appender);
+        }
+    }
 
-  public void doAutoConfigFromSystemProperties(String val) throws JoranException {
-    //lc.reset();
-    System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, val);
-    new ContextInitializer(loggerContext).autoConfig();
-    Appender<ILoggingEvent> appender = root.getAppender("AUTO_BY_SYSTEM_PROPERTY");
-    assertNotNull(appender);
-  }
+    @Test
+    public void autoConfigFromSystemProperties() throws JoranException {
+        doAutoConfigFromSystemProperties(ClassicTestConstants.INPUT_PREFIX + "autoConfig.xml");
+        doAutoConfigFromSystemProperties("autoConfigAsResource.xml");
+        // test passing a URL. note the relative path syntax with file:src/test/...
+        doAutoConfigFromSystemProperties("file:" + ClassicTestConstants.INPUT_PREFIX + "autoConfig.xml");
+    }
 
-  @Test
-  public void autoStatusListener() throws JoranException {
-    System.setProperty(CoreConstants.STATUS_LISTENER_CLASS, TrivialStatusListener.class.getName());
-    List<StatusListener> statusListenerList = loggerContext.getStatusManager().getCopyOfStatusListenerList();
-    assertEquals(0, statusListenerList.size());
-    doAutoConfigFromSystemProperties(ClassicTestConstants.INPUT_PREFIX + "autoConfig.xml");
-    statusListenerList = loggerContext.getStatusManager().getCopyOfStatusListenerList();
-    assertTrue(statusListenerList.size() +" should be 1", statusListenerList.size() == 1);
-    // LOGBACK-767
-    TrivialStatusListener tsl = (TrivialStatusListener) statusListenerList.get(0);
-    assertTrue("expecting at least one event in list", tsl.list.size() > 0);
-  }
+    public void doAutoConfigFromSystemProperties(String val) throws JoranException {
+        //lc.reset();
+        System.setProperty(ContextInitializer.CONFIG_FILE_PROPERTY, val);
+        new ContextInitializer(loggerContext).autoConfig();
+        Appender<ILoggingEvent> appender = root.getAppender("AUTO_BY_SYSTEM_PROPERTY");
+        assertNotNull(appender);
+    }
+
+    @Test
+    public void autoStatusListener() throws JoranException {
+        System.setProperty(CoreConstants.STATUS_LISTENER_CLASS, TrivialStatusListener.class.getName());
+        List<StatusListener> statusListenerList = loggerContext.getStatusManager().getCopyOfStatusListenerList();
+        assertEquals(0, statusListenerList.size());
+        doAutoConfigFromSystemProperties(ClassicTestConstants.INPUT_PREFIX + "autoConfig.xml");
+        statusListenerList = loggerContext.getStatusManager().getCopyOfStatusListenerList();
+        assertTrue(statusListenerList.size() + " should be 1", statusListenerList.size() == 1);
+        // LOGBACK-767
+        TrivialStatusListener tsl = (TrivialStatusListener) statusListenerList.get(0);
+        assertTrue("expecting at least one event in list", tsl.list.size() > 0);
+    }
 
 }

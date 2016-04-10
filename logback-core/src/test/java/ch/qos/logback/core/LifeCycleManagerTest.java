@@ -18,7 +18,6 @@ import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
 
-
 /**
  * Unit tests for {@link LifeCycleManager}.
  *
@@ -26,15 +25,15 @@ import org.junit.Test;
  */
 public class LifeCycleManagerTest {
 
-  private LifeCycleManager manager = new LifeCycleManager();
+    private LifeCycleManager manager = new LifeCycleManager();
 
-  @Test
-  public void testRegisterAndReset() {
-    MockLifeCycleComponent component = new MockLifeCycleComponent();
-    manager.register(component);
-    component.start();
-    manager.reset();
-    assertFalse(component.isStarted());
-  }
+    @Test
+    public void testRegisterAndReset() {
+        MockLifeCycleComponent component = new MockLifeCycleComponent();
+        manager.register(component);
+        component.start();
+        manager.reset();
+        assertFalse(component.isStarted());
+    }
 
 }

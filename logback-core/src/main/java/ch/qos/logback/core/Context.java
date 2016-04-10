@@ -30,111 +30,110 @@ import ch.qos.logback.core.status.StatusManager;
  */
 public interface Context extends PropertyContainer {
 
-  /**
-   * Return the StatusManager instance in use.
-   *
-   * @return the {@link StatusManager} instance in use.
-   */
-  StatusManager getStatusManager();
+    /**
+     * Return the StatusManager instance in use.
+     *
+     * @return the {@link StatusManager} instance in use.
+     */
+    StatusManager getStatusManager();
 
-  /**
-   * A Context can act as a store for various objects used by logback
-   * components.
-   *
-   * @param key the key of the object
-   * @return The object stored under 'key'.
-   */
-  Object getObject(String key);
+    /**
+     * A Context can act as a store for various objects used by logback
+     * components.
+     *
+     * @param key the key of the object
+     * @return The object stored under 'key'.
+     */
+    Object getObject(String key);
 
-  /**
-   * Store an object under 'key'. If no object can be found, null is returned.
-   *
-   * @param key the key of the object
-   * @param value the value to associate with the key
-   */
-  void putObject(String key, Object value);
+    /**
+     * Store an object under 'key'. If no object can be found, null is returned.
+     *
+     * @param key the key of the object
+     * @param value the value to associate with the key
+     */
+    void putObject(String key, Object value);
 
-  /**
-   * Get the property of this context.
-   * @param key the key of the property
-   * @return the associated string value
-   */
-  String getProperty(String key);
+    /**
+     * Get the property of this context.
+     * @param key the key of the property
+     * @return the associated string value
+     */
+    String getProperty(String key);
 
-  /**
-   * Set a property of this context.
-   * @param key the property's key
-   * @param value the value associated with the key
-   */
-  void putProperty(String key, String value);
+    /**
+     * Set a property of this context.
+     * @param key the property's key
+     * @param value the value associated with the key
+     */
+    void putProperty(String key, String value);
 
+    /**
+     * Get a copy of the property map
+     * @return the property map copy
+     * @since 0.9.20
+     */
+    Map<String, String> getCopyOfPropertyMap();
 
-  /**
-   * Get a copy of the property map
-   * @return the property map copy
-   * @since 0.9.20
-   */
-  Map<String, String> getCopyOfPropertyMap();
+    /**
+     * Contexts are named objects.
+     *
+     * @return the name for this context
+     */
+    String getName();
 
-  /**
-   * Contexts are named objects.
-   *
-   * @return the name for this context
-   */
-  String getName();
+    /**
+     * The name of the context. This can be set only once.
+     *
+     * @param name the desired context name
+     */
+    void setName(String name);
 
-  /**
-   * The name of the context. This can be set only once.
-   *
-   * @param name the desired context name
-   */
-  void setName(String name);
+    /**
+     * The time at which this context was created, expressed in
+     * millisecond elapsed since the epoch (1.1.1970).
+     *
+     * @return The time as measured when this class was created.
+     */
+    long getBirthTime();
 
-  /**
-   * The time at which this context was created, expressed in
-   * millisecond elapsed since the epoch (1.1.1970).
-   *
-   * @return The time as measured when this class was created.
-   */
-  long getBirthTime();
+    /**
+     * Object used for synchronization purposes.
+     * INTENDED FOR INTERNAL USAGE.
+     * @return the configuration lock
+     */
+    Object getConfigurationLock();
 
-  /**
-   * Object used for synchronization purposes.
-   * INTENDED FOR INTERNAL USAGE.
-   * @return the configuration lock
-   */
-  Object getConfigurationLock();
+    /**
+    * Returns the ScheduledExecutorService for this context.
+    * @return
+    * @since 1.1.7
+    */
+    // Apparently ScheduledThreadPoolExecutor has limitation where a task cannot be submitted from
+    // within a running task. ThreadPoolExecutor does not have this limitation.
+    // This causes tests failutes in SocketReceiverTest.testDispatchEventForEnabledLevel and
+    // ServerSocketReceiverFunctionalTest.testLogEventFromClient.
+    ScheduledExecutorService getScheduledExecutorService();
 
-  /**
-  * Returns the ScheduledExecutorService for this context.
-  * @return
-  * @since 1.1.7
-  */
-  // Apparently ScheduledThreadPoolExecutor has limitation where a task cannot be submitted from
-  // within a running task. ThreadPoolExecutor does not have this limitation.
-  // This causes tests failutes in SocketReceiverTest.testDispatchEventForEnabledLevel and
-  // ServerSocketReceiverFunctionalTest.testLogEventFromClient.
-  ScheduledExecutorService getScheduledExecutorService();
+    /**
+     * Every context has an ExecutorService which be invoked to execute certain
+     * tasks in a separate thread.
+     *
+     * @return the executor for this context.
+     * @since 1.0.0
+     */
+    ExecutorService getExecutorService();
 
-  /**
-   * Every context has an ExecutorService which be invoked to execute certain
-   * tasks in a separate thread.
-   *
-   * @return the executor for this context.
-   * @since 1.0.0
-   */
-  ExecutorService getExecutorService();
+    /**
+     * Register a component that participates in the context's life cycle.
+     * <p>
+     * All components registered via this method will be stopped and removed
+     * from the context when the context is reset.
+     *
+     * @param component the subject component
+     */
+    void register(LifeCycle component);
 
-  /**
-   * Register a component that participates in the context's life cycle.
-   * <p>
-   * All components registered via this method will be stopped and removed
-   * from the context when the context is reset.
-   *
-   * @param component the subject component
-   */
-  void register(LifeCycle component);
-
-  void addScheduledFuture(ScheduledFuture<?> scheduledFuture);
+    void addScheduledFuture(ScheduledFuture<?> scheduledFuture);
 
 }

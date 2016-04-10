@@ -29,37 +29,35 @@ import ch.qos.logback.core.util.ExecutorServiceUtil;
  */
 public class SSLServerSocketAppenderBaseTest {
 
-  private MockContext context = new MockContext(ExecutorServiceUtil.newScheduledExecutorService());
+    private MockContext context = new MockContext(ExecutorServiceUtil.newScheduledExecutorService());
 
-  private SSLServerSocketAppenderBase appender =
-      new InstrumentedSSLServerSocketAppenderBase();
+    private SSLServerSocketAppenderBase appender = new InstrumentedSSLServerSocketAppenderBase();
 
-  @Before
-  public void setUp() throws Exception {
-    appender.setContext(context);
-  }
-
-  @Test
-  public void testUsingDefaultConfig() throws Exception {
-    // should be able to start successfully with no SSL configuration at all
-    appender.start();
-    assertNotNull(appender.getServerSocketFactory());
-    appender.stop();
-  }
-
-  private static class InstrumentedSSLServerSocketAppenderBase
-      extends SSLServerSocketAppenderBase<Object> {
-
-    @Override
-    protected void postProcessEvent(Object event) {
-      throw new UnsupportedOperationException();
+    @Before
+    public void setUp() throws Exception {
+        appender.setContext(context);
     }
 
-    @Override
-    protected PreSerializationTransformer<Object> getPST() {
-      throw new UnsupportedOperationException();
+    @Test
+    public void testUsingDefaultConfig() throws Exception {
+        // should be able to start successfully with no SSL configuration at all
+        appender.start();
+        assertNotNull(appender.getServerSocketFactory());
+        appender.stop();
     }
 
-  }
+    private static class InstrumentedSSLServerSocketAppenderBase extends SSLServerSocketAppenderBase<Object> {
+
+        @Override
+        protected void postProcessEvent(Object event) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected PreSerializationTransformer<Object> getPST() {
+            throw new UnsupportedOperationException();
+        }
+
+    }
 
 }

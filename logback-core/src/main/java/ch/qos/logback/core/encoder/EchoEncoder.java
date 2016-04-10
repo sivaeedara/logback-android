@@ -20,17 +20,17 @@ import ch.qos.logback.core.CoreConstants;
 
 public class EchoEncoder<E> extends EncoderBase<E> {
 
-  public void doEncode(E event) throws IOException {
-    String val = event + CoreConstants.LINE_SEPARATOR;
-    outputStream.write(val.getBytes());
-    // necessary if ResilientFileOutputStream is buffered
-    outputStream.flush();
-  }
+    public void doEncode(E event) throws IOException {
+        String val = event + CoreConstants.LINE_SEPARATOR;
+        outputStream.write(val.getBytes());
+        // necessary if ResilientFileOutputStream is buffered
+        outputStream.flush();
+    }
 
-  public void close() throws IOException {
-  }
+    public void close() throws IOException {
+    }
 
-  public void init(OutputStream os) throws IOException {
-    super.init(os);
-  }
+    public void init(OutputStream os) throws IOException {
+        super.init(os);
+    }
 }

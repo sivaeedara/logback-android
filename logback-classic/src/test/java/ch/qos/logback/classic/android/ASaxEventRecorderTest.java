@@ -30,36 +30,36 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.Loader;
 
 public class ASaxEventRecorderTest {
-  static private LoggerContext context;
-  static private ASaxEventRecorder recorder;
-  static private ClassLoader classLoader;
-  static private InputStream stream;
+    static private LoggerContext context;
+    static private ASaxEventRecorder recorder;
+    static private ClassLoader classLoader;
+    static private InputStream stream;
 
-  @BeforeClass
-  static public void beforeClass() {
-    context = new LoggerContext();
-    recorder = new ASaxEventRecorder();
-    classLoader = Loader.getClassLoaderOfObject(ASaxEventRecorderTest.class);
-    recorder.setContext(context);
-  }
-
-  @Before
-  public void before() {
-    stream = classLoader.getResourceAsStream("asResource/AndroidManifest.xml");
-  }
-
-  @After
-  public void after() throws IOException {
-    if (stream != null) {
-      stream.close();
+    @BeforeClass
+    static public void beforeClass() {
+        context = new LoggerContext();
+        recorder = new ASaxEventRecorder();
+        classLoader = Loader.getClassLoaderOfObject(ASaxEventRecorderTest.class);
+        recorder.setContext(context);
     }
-  }
 
-  @Test
-  public void setFilterOnlyRecordsSpecifiedEvents() throws JoranException {
-    recorder.setFilter("manifest", "logback");
-    recorder.recordEvents(stream);
-    List<SaxEvent> events = recorder.getSaxEventList();
-    assertFalse(events.isEmpty());
-  }
+    @Before
+    public void before() {
+        stream = classLoader.getResourceAsStream("asResource/AndroidManifest.xml");
+    }
+
+    @After
+    public void after() throws IOException {
+        if (stream != null) {
+            stream.close();
+        }
+    }
+
+    @Test
+    public void setFilterOnlyRecordsSpecifiedEvents() throws JoranException {
+        recorder.setFilter("manifest", "logback");
+        recorder.recordEvents(stream);
+        List<SaxEvent> events = recorder.getSaxEventList();
+        assertFalse(events.isEmpty());
+    }
 }

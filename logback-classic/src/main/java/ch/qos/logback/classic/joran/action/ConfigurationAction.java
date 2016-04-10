@@ -33,108 +33,105 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ConfigurationAction extends Action {
-  static final String INTERNAL_DEBUG_ATTR = "debug";
-  static final String PACKAGING_DATA_ATTR = "packagingData";
-  static final String SCAN_ATTR = "scan";
-  static final String SCAN_PERIOD_ATTR = "scanPeriod";
-  static final String DEBUG_SYSTEM_PROPERTY_KEY = "logback.debug";
+    static final String INTERNAL_DEBUG_ATTR = "debug";
+    static final String PACKAGING_DATA_ATTR = "packagingData";
+    static final String SCAN_ATTR = "scan";
+    static final String SCAN_PERIOD_ATTR = "scanPeriod";
+    static final String DEBUG_SYSTEM_PROPERTY_KEY = "logback.debug";
 
-  @Override
-  public void begin(InterpretationContext ic, String name, Attributes attributes) {
-    // See LBCLASSIC-225 (the system property is looked up first. Thus, it overrides
-    // the equivalent property in the config file. This reversal of scope priority is justified
-    // by the use case: the admin trying to chase rogue config file
-    String debugAttrib = OptionHelper.getSystemProperty(DEBUG_SYSTEM_PROPERTY_KEY);
-    if (debugAttrib == null) {
-      debugAttrib = ic.subst(attributes.getValue(INTERNAL_DEBUG_ATTR));
+    @Override
+    public void begin(InterpretationContext ic, String name, Attributes attributes) {
+        // See LBCLASSIC-225 (the system property is looked up first. Thus, it overrides
+        // the equivalent property in the config file. This reversal of scope priority is justified
+        // by the use case: the admin trying to chase rogue config file
+        String debugAttrib = OptionHelper.getSystemProperty(DEBUG_SYSTEM_PROPERTY_KEY);
+        if (debugAttrib == null) {
+            debugAttrib = ic.subst(attributes.getValue(INTERNAL_DEBUG_ATTR));
+        }
+
+        if (OptionHelper.isEmpty(debugAttrib) || debugAttrib.equalsIgnoreCase("false") || debugAttrib.equalsIgnoreCase("null")) {
+            addInfo(INTERNAL_DEBUG_ATTR + " attribute not set");
+        } else {
+            StatusListenerConfigHelper.addOnConsoleListenerInstance(context, new OnConsoleStatusListener());
+        }
+
+        processScanAttrib(ic, attributes);
+        ContextUtil contextUtil = new ContextUtil(context);
+        contextUtil.addHostNameAsProperty();
+
+        LoggerContext lc = (LoggerContext) context;
+        boolean packagingData = OptionHelper.toBoolean(ic.subst(attributes.getValue(PACKAGING_DATA_ATTR)), LoggerContext.DEFAULT_PACKAGING_DATA);
+        lc.setPackagingDataEnabled(packagingData);
+
+        // the context is turbo filter attachable, so it is pushed on top of the
+        // stack
+        ic.pushObject(getContext());
     }
 
-    if (OptionHelper.isEmpty(debugAttrib) || debugAttrib.equalsIgnoreCase("false")
-        || debugAttrib.equalsIgnoreCase("null")) {
-      addInfo(INTERNAL_DEBUG_ATTR + " attribute not set");
-    } else {
-      StatusListenerConfigHelper.addOnConsoleListenerInstance(context, new OnConsoleStatusListener());
+    String getSystemProperty(String name) {
+        /*
+         * LOGBACK-743: accessing a system property in the presence of a
+         * SecurityManager (e.g. applet sandbox) can result in a SecurityException.
+         */
+        try {
+            return System.getProperty(name);
+        } catch (SecurityException ex) {
+            return null;
+        }
     }
 
-    processScanAttrib(ic, attributes);
-    ContextUtil contextUtil = new ContextUtil(context);
-    contextUtil.addHostNameAsProperty();
+    void processScanAttrib(InterpretationContext ic, Attributes attributes) {
+        String scanAttrib = ic.subst(attributes.getValue(SCAN_ATTR));
+        if (!OptionHelper.isEmpty(scanAttrib) && !"false".equalsIgnoreCase(scanAttrib)) {
 
-    LoggerContext lc = (LoggerContext) context;
-    boolean packagingData = OptionHelper.toBoolean(
-        ic.subst(attributes.getValue(PACKAGING_DATA_ATTR)),
-        LoggerContext.DEFAULT_PACKAGING_DATA);
-    lc.setPackagingDataEnabled(packagingData);
+            ScheduledExecutorService scheduledExecutorService = context.getScheduledExecutorService();
+            URL mainURL = ConfigurationWatchListUtil.getMainWatchURL(context);
+            if (mainURL == null) {
+                addWarn("Due to missing top level configuration file, reconfiguration on change (configuration file scanning) cannot be done.");
+                return;
+            }
+            ReconfigureOnChangeTask rocTask = new ReconfigureOnChangeTask();
+            rocTask.setContext(context);
 
-    // the context is turbo filter attachable, so it is pushed on top of the
-    // stack
-    ic.pushObject(getContext());
-  }
+            context.putObject(CoreConstants.RECONFIGURE_ON_CHANGE_TASK, rocTask);
 
-  String getSystemProperty(String name) {
-    /*
-     * LOGBACK-743: accessing a system property in the presence of a
-     * SecurityManager (e.g. applet sandbox) can result in a SecurityException.
-     */
-    try {
-      return System.getProperty(name);
-    } catch (SecurityException ex) {
-      return null;
+            String scanPeriodAttrib = ic.subst(attributes.getValue(SCAN_PERIOD_ATTR));
+            Duration duration = getDuration(scanAttrib, scanPeriodAttrib);
+
+            if (duration == null) {
+                return;
+            }
+
+            addInfo("Will scan for changes in [" + mainURL + "] ");
+            // Given that included files are encountered at a later phase, the complete list of files
+            // to scan can only be determined when the configuration is loaded in full.
+            // However, scan can be active if mainURL is set. Otherwise, when changes are detected
+            // the top level config file cannot be accessed.
+            addInfo("Setting ReconfigureOnChangeTask scanning period to " + duration);
+
+            ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(rocTask, duration.getMilliseconds(), duration.getMilliseconds(),
+                            TimeUnit.MILLISECONDS);
+            context.addScheduledFuture(scheduledFuture);
+        }
     }
-  }
 
-  void processScanAttrib(InterpretationContext ic, Attributes attributes) {
-    String scanAttrib = ic.subst(attributes.getValue(SCAN_ATTR));
-    if (!OptionHelper.isEmpty(scanAttrib) && !"false".equalsIgnoreCase(scanAttrib)) {
+    private Duration getDuration(String scanAttrib, String scanPeriodAttrib) {
+        Duration duration = null;
 
-      ScheduledExecutorService scheduledExecutorService = context.getScheduledExecutorService();
-      URL mainURL = ConfigurationWatchListUtil.getMainWatchURL(context);
-      if (mainURL == null) {
-        addWarn("Due to missing top level configuration file, reconfiguration on change (configuration file scanning) cannot be done.");
-        return;
-      }
-      ReconfigureOnChangeTask rocTask = new ReconfigureOnChangeTask();
-      rocTask.setContext(context);
+        if (!OptionHelper.isEmpty(scanPeriodAttrib)) {
+            try {
+                duration = Duration.valueOf(scanPeriodAttrib);
 
-      context.putObject(CoreConstants.RECONFIGURE_ON_CHANGE_TASK, rocTask);
-
-      String scanPeriodAttrib = ic.subst(attributes.getValue(SCAN_PERIOD_ATTR));
-      Duration duration = getDuration(scanAttrib, scanPeriodAttrib);
-
-      if (duration == null) {
-        return;
-      }
-
-      addInfo("Will scan for changes in [" + mainURL + "] ");
-      // Given that included files are encountered at a later phase, the complete list of files
-      // to scan can only be determined when the configuration is loaded in full.
-      // However, scan can be active if mainURL is set. Otherwise, when changes are detected
-      // the top level config file cannot be accessed.
-      addInfo("Setting ReconfigureOnChangeTask scanning period to " + duration);
-
-      ScheduledFuture<?> scheduledFuture = scheduledExecutorService.scheduleAtFixedRate(rocTask, duration.getMilliseconds(), duration.getMilliseconds(),
-          TimeUnit.MILLISECONDS);
-      context.addScheduledFuture(scheduledFuture);
+            } catch (NumberFormatException nfe) {
+                addError("Error while converting [" + scanAttrib + "] to long", nfe);
+            }
+        }
+        return duration;
     }
-  }
 
-  private Duration getDuration(String scanAttrib, String scanPeriodAttrib) {
-    Duration duration = null;
-
-    if (!OptionHelper.isEmpty(scanPeriodAttrib)) {
-      try {
-        duration = Duration.valueOf(scanPeriodAttrib);
-
-      } catch (NumberFormatException nfe) {
-        addError("Error while converting [" + scanAttrib + "] to long", nfe);
-      }
+    @Override
+    public void end(InterpretationContext ec, String name) {
+        addInfo("End of configuration.");
+        ec.popObject();
     }
-    return duration;
-  }
-
-  @Override
-  public void end(InterpretationContext ec, String name) {
-    addInfo("End of configuration.");
-    ec.popObject();
-  }
 }

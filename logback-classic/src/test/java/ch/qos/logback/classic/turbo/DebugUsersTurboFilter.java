@@ -35,28 +35,28 @@ import ch.qos.logback.core.spi.FilterReply;
  * @author S&eacute;bastien Pennec
  */
 public class DebugUsersTurboFilter extends TurboFilter {
-  private static final String USER_MDC_KEY = "user";
-  List<String> userList = new ArrayList<String>();
+    private static final String USER_MDC_KEY = "user";
+    List<String> userList = new ArrayList<String>();
 
-  @Override
-  public FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
-    if (!level.equals(Level.DEBUG)) {
-      return FilterReply.NEUTRAL;
+    @Override
+    public FilterReply decide(Marker marker, Logger logger, Level level, String format, Object[] params, Throwable t) {
+        if (!level.equals(Level.DEBUG)) {
+            return FilterReply.NEUTRAL;
+        }
+        String user = MDC.get(USER_MDC_KEY);
+        if (user != null && userList.contains(user)) {
+            return FilterReply.ACCEPT;
+        }
+        return FilterReply.NEUTRAL;
     }
-    String user = MDC.get(USER_MDC_KEY);
-    if (user != null && userList.contains(user)) {
-      return FilterReply.ACCEPT;
+
+    public void addUser(String user) {
+        userList.add(user);
     }
-    return FilterReply.NEUTRAL;
-  }
 
-  public void addUser(String user) {
-    userList.add(user);
-  }
-
-  //test in BasicJoranTest only, to be removed asap.
-  public List<String> getUsers() {
-    return userList;
-  }
+    //test in BasicJoranTest only, to be removed asap.
+    public List<String> getUsers() {
+        return userList;
+    }
 
 }

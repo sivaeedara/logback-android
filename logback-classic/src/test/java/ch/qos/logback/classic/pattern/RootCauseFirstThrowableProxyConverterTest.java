@@ -39,86 +39,84 @@ import static org.junit.Assert.assertTrue;
  */
 public class RootCauseFirstThrowableProxyConverterTest {
 
-  private LoggerContext context = new LoggerContext();
-  private ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
-  private StringWriter stringWriter = new StringWriter();
-  private PrintWriter printWriter = new PrintWriter(stringWriter);
+    private LoggerContext context = new LoggerContext();
+    private ThrowableProxyConverter converter = new RootCauseFirstThrowableProxyConverter();
+    private StringWriter stringWriter = new StringWriter();
+    private PrintWriter printWriter = new PrintWriter(stringWriter);
 
-  @Before
-  public void setUp() throws Exception {
-    converter.setContext(context);
-    converter.start();
-  }
-
-  private ILoggingEvent createLoggingEvent(Throwable t) {
-    return new LoggingEvent(this.getClass().getName(), context
-        .getLogger(Logger.ROOT_LOGGER_NAME), Level.DEBUG, "test message", t,
-        null);
-  }
-
-  @Test
-  public void integration() {
-    //given
-    context.setPackagingDataEnabled(true);
-    PatternLayout pl = new PatternLayout();
-    pl.setContext(context);
-    pl.setPattern("%m%rEx%n");
-    pl.start();
-
-    //when
-    ILoggingEvent e = createLoggingEvent(new Exception("x"));
-    String result = pl.doLayout(e);
-
-    //then
-    // make sure that at least some package data was output
-    Pattern p = Pattern.compile("\\s*at .*?\\[.*?\\]");
-    Matcher m = p.matcher(result);
-    int i = 0;
-    while(m.find()) {
-      i++;
+    @Before
+    public void setUp() throws Exception {
+        converter.setContext(context);
+        converter.start();
     }
-    //assertThat(i).isGreaterThan(5);
-    assertTrue(i > 0);
-  }
 
-  @Test
-  public void smoke() {
-    //given
-    Exception exception = new Exception("smoke");
-    exception.printStackTrace(printWriter);
+    private ILoggingEvent createLoggingEvent(Throwable t) {
+        return new LoggingEvent(this.getClass().getName(), context.getLogger(Logger.ROOT_LOGGER_NAME), Level.DEBUG, "test message", t, null);
+    }
 
-    //when
-    ILoggingEvent le = createLoggingEvent(exception);
-    String result = converter.convert(le);
+    @Test
+    public void integration() {
+        //given
+        context.setPackagingDataEnabled(true);
+        PatternLayout pl = new PatternLayout();
+        pl.setContext(context);
+        pl.setPattern("%m%rEx%n");
+        pl.start();
 
-    //then
-    result = result.replace("common frames omitted", "more");
-    result = result.replaceAll(" ~?\\[.*\\]", "");
-    //assertThat(result).isEqualTo(stringWriter.toString());
-    assertEquals(stringWriter.toString(), result);    
-  }
+        //when
+        ILoggingEvent e = createLoggingEvent(new Exception("x"));
+        String result = pl.doLayout(e);
 
-  @Test
-  public void nested() {
-    //given
-    Throwable nestedException = makeNestedException(2);
-    nestedException.printStackTrace(printWriter);
+        //then
+        // make sure that at least some package data was output
+        Pattern p = Pattern.compile("\\s*at .*?\\[.*?\\]");
+        Matcher m = p.matcher(result);
+        int i = 0;
+        while (m.find()) {
+            i++;
+        }
+        //assertThat(i).isGreaterThan(5);
+        assertTrue(i > 0);
+    }
 
-    //when
-    ILoggingEvent le = createLoggingEvent(nestedException);
-    String result = converter.convert(le);
+    @Test
+    public void smoke() {
+        //given
+        Exception exception = new Exception("smoke");
+        exception.printStackTrace(printWriter);
 
-    //then
-//    assertThat(result).startsWith("java.lang.Exception: nesting level=0");
-//    assertThat(
-//            positionOf("nesting level=0").in(result)).isLessThan(
-//            positionOf("nesting level =1").in(result));
-//    assertThat(
-//            positionOf("nesting level =1").in(result)).isLessThan(
-//            positionOf("nesting level =2").in(result));
-    assertTrue(result.startsWith("java.lang.Exception: nesting level=0"));
-    assertTrue(positionOf("nesting level=0").in(result) < positionOf("nesting level =1").in(result));
-    assertTrue(positionOf("nesting level =1").in(result) < positionOf("nesting level =2").in(result));
-  }
+        //when
+        ILoggingEvent le = createLoggingEvent(exception);
+        String result = converter.convert(le);
+
+        //then
+        result = result.replace("common frames omitted", "more");
+        result = result.replaceAll(" ~?\\[.*\\]", "");
+        //assertThat(result).isEqualTo(stringWriter.toString());
+        assertEquals(stringWriter.toString(), result);
+    }
+
+    @Test
+    public void nested() {
+        //given
+        Throwable nestedException = makeNestedException(2);
+        nestedException.printStackTrace(printWriter);
+
+        //when
+        ILoggingEvent le = createLoggingEvent(nestedException);
+        String result = converter.convert(le);
+
+        //then
+        //    assertThat(result).startsWith("java.lang.Exception: nesting level=0");
+        //    assertThat(
+        //            positionOf("nesting level=0").in(result)).isLessThan(
+        //            positionOf("nesting level =1").in(result));
+        //    assertThat(
+        //            positionOf("nesting level =1").in(result)).isLessThan(
+        //            positionOf("nesting level =2").in(result));
+        assertTrue(result.startsWith("java.lang.Exception: nesting level=0"));
+        assertTrue(positionOf("nesting level=0").in(result) < positionOf("nesting level =1").in(result));
+        assertTrue(positionOf("nesting level =1").in(result) < positionOf("nesting level =2").in(result));
+    }
 
 }

@@ -27,25 +27,25 @@ import java.util.Properties;
 
 public class ContextUtil extends ContextAwareBase {
 
-  public ContextUtil(Context context) {
-    setContext(context);
-  }
-
-  /**
-   * Add the local host's name as a property
-   */
-  public void addHostNameAsProperty() {
-    context.putProperty(CoreConstants.HOSTNAME_KEY, "localhost");
-  }
-
-  public void addProperties(Properties props) {
-    if (props == null) {
-      return;
+    public ContextUtil(Context context) {
+        setContext(context);
     }
-    Iterator i = props.keySet().iterator();
-    while (i.hasNext()) {
-      String key = (String) i.next();
-      context.putProperty(key, props.getProperty(key));
+
+    /**
+     * Add the local host's name as a property
+     */
+    public void addHostNameAsProperty() {
+        context.putProperty(CoreConstants.HOSTNAME_KEY, "localhost");
     }
-  }
+
+    public void addProperties(Properties props) {
+        if (props == null) {
+            return;
+        }
+        Iterator i = props.keySet().iterator();
+        while (i.hasNext()) {
+            String key = (String) i.next();
+            context.putProperty(key, props.getProperty(key));
+        }
+    }
 }

@@ -22,40 +22,40 @@ import java.lang.reflect.Method;
  * @author Anthony K. Trinh
  */
 public class PropertyDescriptor {
-  private Method writeMethod;
-  private Method readMethod;
-  private String name;
-  private Class<?> type;
+    private Method writeMethod;
+    private Method readMethod;
+    private String name;
+    private Class<?> type;
 
-  public PropertyDescriptor(String name) {
-    this.name = name;
-  }
+    public PropertyDescriptor(String name) {
+        this.name = name;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public Method getWriteMethod() {
-    return writeMethod;
-  }
+    public Method getWriteMethod() {
+        return writeMethod;
+    }
 
-  public void setWriteMethod(Method writeMethod) {
-    this.writeMethod = writeMethod;
-  }
+    public void setWriteMethod(Method writeMethod) {
+        this.writeMethod = writeMethod;
+    }
 
-  public Method getReadMethod() {
-    return readMethod;
-  }
+    public Method getReadMethod() {
+        return readMethod;
+    }
 
-  public void setReadMethod(Method readMethod) {
-    this.readMethod = readMethod;
-  }
+    public void setReadMethod(Method readMethod) {
+        this.readMethod = readMethod;
+    }
 
-  public Class<?> getPropertyType() {
-    return type;
-  }
+    public Class<?> getPropertyType() {
+        return type;
+    }
 
-  public void setPropertyType(Class<?> type) {
-    this.type = type;
-  }
+    public void setPropertyType(Class<?> type) {
+        this.type = type;
+    }
 }

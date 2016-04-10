@@ -27,57 +27,53 @@ import java.util.List;
  */
 public interface StatusManager {
 
-  /**
-   * Add a new status message.
-   *
-   * @param status the status to add
-   */
-  void add(Status status);
+    /**
+     * Add a new status message.
+     *
+     * @param status the status to add
+     */
+    void add(Status status);
 
-  /**
-   * Obtain a copy of the status list maintained by this StatusManager.
-   *
-   * @return the status list
-   */
-  List<Status> getCopyOfStatusList();
+    /**
+     * Obtain a copy of the status list maintained by this StatusManager.
+     *
+     * @return the status list
+     */
+    List<Status> getCopyOfStatusList();
 
-  /**
-   * Return the number of status entries.
-   *
-   * @return entry count
-   */
-  int getCount();
+    /**
+     * Return the number of status entries.
+     *
+     * @return entry count
+     */
+    int getCount();
 
-  /**
-   * Add a status listener. The StatusManager may decide to skip installation if an
-   * earlier instance was already installed.
-   *
-   * @param listener
-   * @return true if actually added, false if skipped
-   */
-  boolean add(StatusListener listener);
+    /**
+     * Add a status listener. The StatusManager may decide to skip installation if an
+     * earlier instance was already installed.
+     *
+     * @param listener
+     * @return true if actually added, false if skipped
+     */
+    boolean add(StatusListener listener);
 
-  /**
-   * Remove a status listener.
-   *
-   * @param listener the status listener
-   */
-  void remove(StatusListener listener);
+    /**
+     * Remove a status listener.
+     *
+     * @param listener the status listener
+     */
+    void remove(StatusListener listener);
 
+    /**
+     * Clear the list of status messages.
+     */
+    void clear();
 
-  /**
-   * Clear the list of status messages.
-   */
-  void clear();
-
-
-  /**
-   * Obtain a copy of the status listener list maintained by this StatusManager
-   *
-   * @return the status listener list
-   */
-  List<StatusListener> getCopyOfStatusListenerList();
-
-
+    /**
+     * Obtain a copy of the status listener list maintained by this StatusManager
+     *
+     * @return the status listener list
+     */
+    List<StatusListener> getCopyOfStatusListenerList();
 
 }

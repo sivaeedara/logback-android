@@ -197,7 +197,7 @@ public class ReconfigureOnChangeTaskTest {
         CountDownLatch doneLatch = waitForReconfigurationToBeDone(null);
         ReconfigureOnChangeTask oldRoct = getRegisteredReconfigureTask();
         assertNotNull(oldRoct);
-        
+
         writeToFile(innerFile, "<included>\n<root>\n</included>");
         doneLatch.await();
 
@@ -209,7 +209,7 @@ public class ReconfigureOnChangeTaskTest {
         CountDownLatch secondDoneLatch = waitForReconfigurationToBeDone(oldRoct);
         writeToFile(innerFile, "<included><root level=\"ERROR\"/></included> ");
         secondDoneLatch.await();
-        
+
         StatusPrinter.print(loggerContext);
         statusChecker.assertIsErrorFree();
         statusChecker.containsMatch(DETECTED_CHANGE_IN_CONFIGURATION_FILES);
@@ -342,12 +342,12 @@ public class ReconfigureOnChangeTaskTest {
     }
 
     void writeToFile(File file, String contents) throws IOException {
-    	FileWriter fw = new FileWriter(file);
+        FileWriter fw = new FileWriter(file);
         fw.write(contents);
         fw.close();
         // on linux changes to last modified are not propagated if the
         // time stamp is near the previous time stamp hence the random delta
-        file.setLastModified(System.currentTimeMillis()+RandomUtil.getPositiveInt());
+        file.setLastModified(System.currentTimeMillis() + RandomUtil.getPositiveInt());
     }
 
     class Harness extends AbstractMultiThreadedHarness {

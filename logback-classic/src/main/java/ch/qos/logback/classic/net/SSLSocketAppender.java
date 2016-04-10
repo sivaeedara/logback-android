@@ -29,27 +29,26 @@ import ch.qos.logback.core.spi.PreSerializationTransformer;
  */
 public class SSLSocketAppender extends AbstractSSLSocketAppender<ILoggingEvent> {
 
-  private final PreSerializationTransformer<ILoggingEvent> pst =
-      new LoggingEventPreSerializationTransformer();
+    private final PreSerializationTransformer<ILoggingEvent> pst = new LoggingEventPreSerializationTransformer();
 
-  private boolean includeCallerData;
+    private boolean includeCallerData;
 
-  public SSLSocketAppender() {
-  }
-
-  @Override
-  protected void postProcessEvent(ILoggingEvent event) {
-    if (includeCallerData) {
-      event.getCallerData();
+    public SSLSocketAppender() {
     }
-  }
 
-  public void setIncludeCallerData(boolean includeCallerData) {
-    this.includeCallerData = includeCallerData;
-  }
+    @Override
+    protected void postProcessEvent(ILoggingEvent event) {
+        if (includeCallerData) {
+            event.getCallerData();
+        }
+    }
 
-  public PreSerializationTransformer<ILoggingEvent> getPST() {
-    return pst;
-  }
+    public void setIncludeCallerData(boolean includeCallerData) {
+        this.includeCallerData = includeCallerData;
+    }
+
+    public PreSerializationTransformer<ILoggingEvent> getPST() {
+        return pst;
+    }
 
 }

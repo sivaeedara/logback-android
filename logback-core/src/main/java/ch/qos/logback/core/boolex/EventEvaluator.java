@@ -28,34 +28,34 @@ import ch.qos.logback.core.spi.LifeCycle;
 
 public interface EventEvaluator<E> extends ContextAware, LifeCycle {
 
-  /**
-   * Evaluates whether the event passed as parameter matches some user-specified
-   * criteria.
-   *
-   * <p>
-   * The <code>Evaluator</code> is free to evaluate the event as it pleases. In
-   * particular, the evaluation results <em>may</em> depend on previous events.
-   *
-   * @param event
-   *          The event to evaluate
-   * @return true if there is a match, false otherwise.
-   * @throws NullPointerException
-   *           can be thrown in presence of null values
-   * @throws EvaluationException
-   *           may be thrown during faulty evaluation
-   */
-  boolean evaluate(E event) throws NullPointerException, EvaluationException;
+    /**
+     * Evaluates whether the event passed as parameter matches some user-specified
+     * criteria.
+     *
+     * <p>
+     * The <code>Evaluator</code> is free to evaluate the event as it pleases. In
+     * particular, the evaluation results <em>may</em> depend on previous events.
+     *
+     * @param event
+     *          The event to evaluate
+     * @return true if there is a match, false otherwise.
+     * @throws NullPointerException
+     *           can be thrown in presence of null values
+     * @throws EvaluationException
+     *           may be thrown during faulty evaluation
+     */
+    boolean evaluate(E event) throws NullPointerException, EvaluationException;
 
-  /**
-   * Gets this evaluator's name
-   *
-   * @return The name of this evaluator.
-   */
-  String getName();
+    /**
+     * Gets this evaluator's name
+     *
+     * @return The name of this evaluator.
+     */
+    String getName();
 
-  /**
-   * Sets this evaluator's name
-   * @param name the desired name
-   */
-  void setName(String name);
+    /**
+     * Sets this evaluator's name
+     * @param name the desired name
+     */
+    void setName(String name);
 }

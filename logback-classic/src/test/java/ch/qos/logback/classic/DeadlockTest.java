@@ -44,9 +44,11 @@ public class DeadlockTest {
 
     public static class A {
         private String mName;
+
         public synchronized String getName() {
             return mName;
         }
+
         public synchronized void setName(String name) {
             mName = name;
         }

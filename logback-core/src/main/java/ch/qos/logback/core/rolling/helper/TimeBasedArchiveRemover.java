@@ -62,8 +62,7 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
             cleanPeriod(dateOfPeriodToClean);
         }
     }
-    
-    
+
     protected File[] getFilesInPeriod(Date dateOfPeriodToClean) {
         String filenameToDelete = fileNamePattern.convert(dateOfPeriodToClean);
         File file2Delete = new File(filenameToDelete);
@@ -93,8 +92,6 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
         }
     }
 
- 
-
     void capTotalSize(Date now) {
         int totalSize = 0;
         int totalRemoved = 0;
@@ -112,21 +109,21 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
                 totalSize += size;
             }
         }
-        addInfo("Removed  "+ new FileSize(totalRemoved) + " of files");
+        addInfo("Removed  " + new FileSize(totalRemoved) + " of files");
     }
-    
+
     private void descendingSortByLastModified(File[] matchingFileArray) {
         Arrays.sort(matchingFileArray, new Comparator<File>() {
             @Override
             public int compare(final File f1, final File f2) {
                 long l1 = f1.lastModified();
                 long l2 = f2.lastModified();
-                if(l1 == l2)
+                if (l1 == l2)
                     return 0;
                 // descending sort, i.e. newest files first
-                if(l2 < l1) 
+                if (l2 < l1)
                     return -1;
-                else 
+                else
                     return 1;
             }
         });
@@ -223,11 +220,10 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
         this.totalSizeCap = totalSizeCap;
     }
 
-
     public String toString() {
         return "c.q.l.core.rolling.helper.TimeBasedArchiveRemover";
     }
-    
+
     public Future<?> cleanAsynchronously(Date now) {
         ArhiveRemoverRunnable runnable = new ArhiveRemoverRunnable(now);
         ExecutorService executorService = context.getScheduledExecutorService();
@@ -237,14 +233,15 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
 
     public class ArhiveRemoverRunnable implements Runnable {
         Date now;
+
         ArhiveRemoverRunnable(Date now) {
             this.now = now;
         }
-        
+
         @Override
         public void run() {
             clean(now);
-            if(totalSizeCap != UNBOUND_TOTAL_SIZE && totalSizeCap > 0) {
+            if (totalSizeCap != UNBOUND_TOTAL_SIZE && totalSizeCap > 0) {
                 capTotalSize(now);
             }
         }

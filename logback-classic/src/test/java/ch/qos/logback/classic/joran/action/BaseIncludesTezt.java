@@ -36,59 +36,59 @@ import ch.qos.logback.core.status.Status;
  * Tests the {@link FindIncludeAction} class
  */
 public class BaseIncludesTezt {
-  protected static final String OUT_DIR = ClassicTestConstants.OUTPUT_DIR_PREFIX;
-  protected static final String RESOURCE_DIR = ClassicTestConstants.RESOURCES_PREFIX;
+    protected static final String OUT_DIR = ClassicTestConstants.OUTPUT_DIR_PREFIX;
+    protected static final String RESOURCE_DIR = ClassicTestConstants.RESOURCES_PREFIX;
 
-  protected LoggerContext context;
-  protected JoranConfigurator config;
-  private String pathToConfig;
+    protected LoggerContext context;
+    protected JoranConfigurator config;
+    private String pathToConfig;
 
-  protected BaseIncludesTezt(String path) {
-    pathToConfig = path;
-  }
-
-  @Before
-  public void setup() throws JoranException {
-    config = new JoranConfigurator();
-    context = new LoggerContext();
-    context.putProperty("OUT_DIR", OUT_DIR);
-    config.setContext(context);
-    config.doConfigure(pathToConfig);
-  }
-
-  @Test
-  public void parentParsesChildConfig() throws JoranException {
-    assertNoErrors(config);
-  }
-
-  @Test
-  public void parentParsesAllChildAppenders() {
-    final int childAppenderCount = 2;
-    final int parentAppenderCount = 1;
-    assertAppenderCount(childAppenderCount + parentAppenderCount);
-  }
-
-  protected void assertAppenderCount(int count) {
-    Map<String,Object> objectMap = config.getInterpretationContext().getObjectMap();
-    @SuppressWarnings("unchecked")
-    Map<String,Object> appenderMap = (Map<String,Object>) objectMap.get(ActionConst.APPENDER_BAG);
-
-    assertThat(appenderMap.size(), is(count));
-  }
-
-  protected void assertHasAppender(String name, Class<?> clazz) {
-    Map<String,Object> objectMap = config.getInterpretationContext().getObjectMap();
-    @SuppressWarnings("unchecked")
-    Map<String,Object> appenderMap = (Map<String,Object>) objectMap.get(ActionConst.APPENDER_BAG);
-
-    Object appender = appenderMap.get(name);
-    assertThat(appender, is(instanceOf(clazz)));
-  }
-
-  protected void assertNoErrors(JoranConfigurator config) {
-    List<Status> status = config.getStatusManager().getCopyOfStatusList();
-    for (Status s : status) {
-      assertThat(s, is(not(instanceOf(ErrorStatus.class))));
+    protected BaseIncludesTezt(String path) {
+        pathToConfig = path;
     }
-  }
+
+    @Before
+    public void setup() throws JoranException {
+        config = new JoranConfigurator();
+        context = new LoggerContext();
+        context.putProperty("OUT_DIR", OUT_DIR);
+        config.setContext(context);
+        config.doConfigure(pathToConfig);
+    }
+
+    @Test
+    public void parentParsesChildConfig() throws JoranException {
+        assertNoErrors(config);
+    }
+
+    @Test
+    public void parentParsesAllChildAppenders() {
+        final int childAppenderCount = 2;
+        final int parentAppenderCount = 1;
+        assertAppenderCount(childAppenderCount + parentAppenderCount);
+    }
+
+    protected void assertAppenderCount(int count) {
+        Map<String, Object> objectMap = config.getInterpretationContext().getObjectMap();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> appenderMap = (Map<String, Object>) objectMap.get(ActionConst.APPENDER_BAG);
+
+        assertThat(appenderMap.size(), is(count));
+    }
+
+    protected void assertHasAppender(String name, Class<?> clazz) {
+        Map<String, Object> objectMap = config.getInterpretationContext().getObjectMap();
+        @SuppressWarnings("unchecked")
+        Map<String, Object> appenderMap = (Map<String, Object>) objectMap.get(ActionConst.APPENDER_BAG);
+
+        Object appender = appenderMap.get(name);
+        assertThat(appender, is(instanceOf(clazz)));
+    }
+
+    protected void assertNoErrors(JoranConfigurator config) {
+        List<Status> status = config.getStatusManager().getCopyOfStatusList();
+        for (Status s : status) {
+            assertThat(s, is(not(instanceOf(ErrorStatus.class))));
+        }
+    }
 }

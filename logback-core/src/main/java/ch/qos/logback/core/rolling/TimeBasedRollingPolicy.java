@@ -93,7 +93,7 @@ public class TimeBasedRollingPolicy<E> extends RollingPolicyBase implements Trig
         timeBasedFileNamingAndTriggeringPolicy.setTimeBasedRollingPolicy(this);
         timeBasedFileNamingAndTriggeringPolicy.start();
 
-        if(!timeBasedFileNamingAndTriggeringPolicy.isStarted()) {
+        if (!timeBasedFileNamingAndTriggeringPolicy.isStarted()) {
             addWarn("Subcomponent did not start. TimeBasedRollingPolicy will not start.");
             return;
         }
@@ -111,7 +111,7 @@ public class TimeBasedRollingPolicy<E> extends RollingPolicyBase implements Trig
                 cleanUpFuture = archiveRemover.cleanAsynchronously(now);
             }
         } else if (totalSizeCap != UNBOUND_TOTAL_SIZE) {
-            addWarn("'maxHistory' is not set, ignoring 'totalSizeCap' option with value ["+totalSizeCap+"]");
+            addWarn("'maxHistory' is not set, ignoring 'totalSizeCap' option with value [" + totalSizeCap + "]");
         }
 
         super.start();

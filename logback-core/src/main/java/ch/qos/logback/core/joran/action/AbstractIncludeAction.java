@@ -31,178 +31,175 @@ import ch.qos.logback.core.util.OptionHelper;
 
 public abstract class AbstractIncludeAction extends Action {
 
-  private static final String FILE_ATTR = "file";
-  private static final String URL_ATTR = "url";
-  private static final String RESOURCE_ATTR = "resource";
-  private static final String OPTIONAL_ATTR = "optional";
+    private static final String FILE_ATTR = "file";
+    private static final String URL_ATTR = "url";
+    private static final String RESOURCE_ATTR = "resource";
+    private static final String OPTIONAL_ATTR = "optional";
 
-  private String attributeInUse;
-  private boolean optional;
-  private URL urlInUse;
+    private String attributeInUse;
+    private boolean optional;
+    private URL urlInUse;
 
-  public URL getUrl() {
-    return urlInUse;
-  }
-
-  abstract protected void processInclude(InterpretationContext ic, URL url) throws JoranException;
-
-  protected void handleError(String message, Exception e) {
-    addError(message, e);
-  }
-
-  @Override
-  public void begin(InterpretationContext ec, String name, Attributes attributes)
-          throws ActionException {
-
-    this.attributeInUse = null;
-    this.optional = OptionHelper.toBoolean(attributes.getValue(OPTIONAL_ATTR), false);
-
-    if (!checkAttributes(attributes)) {
-      return;
+    public URL getUrl() {
+        return urlInUse;
     }
 
-    try {
-      URL url = getInputURL(ec, attributes);
-      if (url != null) {
-        processInclude(ec, url);
-      }
-    } catch (JoranException e) {
-      handleError("Error while parsing " + attributeInUse, e);
+    abstract protected void processInclude(InterpretationContext ic, URL url) throws JoranException;
+
+    protected void handleError(String message, Exception e) {
+        addError(message, e);
     }
 
-  }
+    @Override
+    public void begin(InterpretationContext ec, String name, Attributes attributes) throws ActionException {
 
-  protected void close(InputStream in) {
-    if (in != null) {
-      try {
-        in.close();
-      } catch (IOException e) {
-      }
-    }
-  }
+        this.attributeInUse = null;
+        this.optional = OptionHelper.toBoolean(attributes.getValue(OPTIONAL_ATTR), false);
 
-  private boolean checkAttributes(Attributes attributes) {
-    String fileAttribute = attributes.getValue(FILE_ATTR);
-    String urlAttribute = attributes.getValue(URL_ATTR);
-    String resourceAttribute = attributes.getValue(RESOURCE_ATTR);
+        if (!checkAttributes(attributes)) {
+            return;
+        }
 
-    int count = 0;
+        try {
+            URL url = getInputURL(ec, attributes);
+            if (url != null) {
+                processInclude(ec, url);
+            }
+        } catch (JoranException e) {
+            handleError("Error while parsing " + attributeInUse, e);
+        }
 
-    if (!OptionHelper.isEmpty(fileAttribute)) {
-      count++;
-    }
-    if (!OptionHelper.isEmpty(urlAttribute)) {
-      count++;
-    }
-    if (!OptionHelper.isEmpty(resourceAttribute)) {
-      count++;
     }
 
-    if (count == 0) {
-      handleError(String.format("One of \"%1$s\", \"%2$s\" or \"%3$s\" attributes must be set.", FILE_ATTR, RESOURCE_ATTR, URL_ATTR), null);
-      return false;
-    } else if (count > 1) {
-      handleError(String.format("Only one of \"%1$s\", \"%2$s\" or \"%3$s\" attributes should be set.", FILE_ATTR, RESOURCE_ATTR, URL_ATTR), null);
-      return false;
-    } else if (count == 1) {
-      return true;
-    }
-    throw new IllegalStateException("Count value [" + count
-            + "] is not expected");
-  }
-
-  private URL attributeToURL(String urlAttribute) {
-    try {
-      URL url = new URL(urlAttribute);
-
-      // Test URL connection to make sure it points to something real.
-      // If it fails, we'll hit the IOException.
-      InputStream stream = url.openStream();
-      stream.close();
-      stream = null;
-
-      return url;
-    } catch (MalformedURLException mue) {
-      if (!optional) {
-        String errMsg = "URL [" + urlAttribute + "] is not well formed.";
-        handleError(errMsg, mue);
-      }
-    } catch (IOException e) {
-      if (!optional) {
-        String errMsg = "URL [" + urlAttribute + "] cannot be opened.";
-        handleError(errMsg, e);
-      }
-    }
-    return null;
-  }
-
-  private URL resourceAsURL(String resourceAttribute) {
-    URL url = Loader.getResourceBySelfClassLoader(resourceAttribute);
-    if (url == null) {
-      if (!optional) {
-        String errMsg = "Could not find resource corresponding to ["
-            + resourceAttribute + "]";
-        handleError(errMsg, null);
-      }
-      return null;
-    } else
-      return url;
-  }
-
-  private URL filePathAsURL(String path) {
-    File file = new File(path);
-    if (!file.exists() || !file.isFile()) {
-      if (!optional) {
-        handleError("File does not exist [" + path + "]", new FileNotFoundException(path));
-      }
-      return null;
+    protected void close(InputStream in) {
+        if (in != null) {
+            try {
+                in.close();
+            } catch (IOException e) {
+            }
+        }
     }
 
-    URI uri = file.toURI();
-    try {
-      return uri.toURL();
-    } catch (MalformedURLException e) {
-      // impossible to get here
-      e.printStackTrace();
-      return null;
-    }
-  }
+    private boolean checkAttributes(Attributes attributes) {
+        String fileAttribute = attributes.getValue(FILE_ATTR);
+        String urlAttribute = attributes.getValue(URL_ATTR);
+        String resourceAttribute = attributes.getValue(RESOURCE_ATTR);
 
-  protected String getAttributeInUse() {
-    return this.attributeInUse;
-  }
+        int count = 0;
 
-  protected boolean isOptional() {
-    return this.optional;
-  }
+        if (!OptionHelper.isEmpty(fileAttribute)) {
+            count++;
+        }
+        if (!OptionHelper.isEmpty(urlAttribute)) {
+            count++;
+        }
+        if (!OptionHelper.isEmpty(resourceAttribute)) {
+            count++;
+        }
 
-  private URL getInputURL(InterpretationContext ec, Attributes attributes) {
-    String fileAttribute = attributes.getValue(FILE_ATTR);
-    String urlAttribute = attributes.getValue(URL_ATTR);
-    String resourceAttribute = attributes.getValue(RESOURCE_ATTR);
-
-    if (!OptionHelper.isEmpty(fileAttribute)) {
-      this.attributeInUse = ec.subst(fileAttribute);
-      return filePathAsURL(attributeInUse);
-    }
-
-    if (!OptionHelper.isEmpty(urlAttribute)) {
-      this.attributeInUse = ec.subst(urlAttribute);
-      return attributeToURL(attributeInUse);
+        if (count == 0) {
+            handleError(String.format("One of \"%1$s\", \"%2$s\" or \"%3$s\" attributes must be set.", FILE_ATTR, RESOURCE_ATTR, URL_ATTR), null);
+            return false;
+        } else if (count > 1) {
+            handleError(String.format("Only one of \"%1$s\", \"%2$s\" or \"%3$s\" attributes should be set.", FILE_ATTR, RESOURCE_ATTR, URL_ATTR), null);
+            return false;
+        } else if (count == 1) {
+            return true;
+        }
+        throw new IllegalStateException("Count value [" + count + "] is not expected");
     }
 
-    if (!OptionHelper.isEmpty(resourceAttribute)) {
-      this.attributeInUse = ec.subst(resourceAttribute);
-      return resourceAsURL(attributeInUse);
+    private URL attributeToURL(String urlAttribute) {
+        try {
+            URL url = new URL(urlAttribute);
+
+            // Test URL connection to make sure it points to something real.
+            // If it fails, we'll hit the IOException.
+            InputStream stream = url.openStream();
+            stream.close();
+            stream = null;
+
+            return url;
+        } catch (MalformedURLException mue) {
+            if (!optional) {
+                String errMsg = "URL [" + urlAttribute + "] is not well formed.";
+                handleError(errMsg, mue);
+            }
+        } catch (IOException e) {
+            if (!optional) {
+                String errMsg = "URL [" + urlAttribute + "] cannot be opened.";
+                handleError(errMsg, e);
+            }
+        }
+        return null;
     }
-    // given previous checkAttributes() check we cannot reach this line
-    throw new IllegalStateException("A URL stream should have been returned");
 
-  }
+    private URL resourceAsURL(String resourceAttribute) {
+        URL url = Loader.getResourceBySelfClassLoader(resourceAttribute);
+        if (url == null) {
+            if (!optional) {
+                String errMsg = "Could not find resource corresponding to [" + resourceAttribute + "]";
+                handleError(errMsg, null);
+            }
+            return null;
+        } else
+            return url;
+    }
 
-  @Override
-  public void end(InterpretationContext ec, String name) throws ActionException {
-    // do nothing
-  }
+    private URL filePathAsURL(String path) {
+        File file = new File(path);
+        if (!file.exists() || !file.isFile()) {
+            if (!optional) {
+                handleError("File does not exist [" + path + "]", new FileNotFoundException(path));
+            }
+            return null;
+        }
+
+        URI uri = file.toURI();
+        try {
+            return uri.toURL();
+        } catch (MalformedURLException e) {
+            // impossible to get here
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    protected String getAttributeInUse() {
+        return this.attributeInUse;
+    }
+
+    protected boolean isOptional() {
+        return this.optional;
+    }
+
+    private URL getInputURL(InterpretationContext ec, Attributes attributes) {
+        String fileAttribute = attributes.getValue(FILE_ATTR);
+        String urlAttribute = attributes.getValue(URL_ATTR);
+        String resourceAttribute = attributes.getValue(RESOURCE_ATTR);
+
+        if (!OptionHelper.isEmpty(fileAttribute)) {
+            this.attributeInUse = ec.subst(fileAttribute);
+            return filePathAsURL(attributeInUse);
+        }
+
+        if (!OptionHelper.isEmpty(urlAttribute)) {
+            this.attributeInUse = ec.subst(urlAttribute);
+            return attributeToURL(attributeInUse);
+        }
+
+        if (!OptionHelper.isEmpty(resourceAttribute)) {
+            this.attributeInUse = ec.subst(resourceAttribute);
+            return resourceAsURL(attributeInUse);
+        }
+        // given previous checkAttributes() check we cannot reach this line
+        throw new IllegalStateException("A URL stream should have been returned");
+
+    }
+
+    @Override
+    public void end(InterpretationContext ec, String name) throws ActionException {
+        // do nothing
+    }
 
 }

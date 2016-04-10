@@ -30,15 +30,14 @@ import ch.qos.logback.core.net.ssl.SSLNestedComponentRegistryRules;
  */
 public class DefaultNestedComponentRules {
 
-  static public void addDefaultNestedComponentRegistryRules(
-      DefaultNestedComponentRegistry registry) {
-    registry.add(AppenderBase.class, "layout", PatternLayout.class);
-    registry.add(UnsynchronizedAppenderBase.class, "layout", PatternLayout.class);
-    
-    registry.add(AppenderBase.class, "encoder", PatternLayoutEncoder.class);
-    registry.add(UnsynchronizedAppenderBase.class, "encoder", PatternLayoutEncoder.class);
-    
-    SSLNestedComponentRegistryRules.addDefaultNestedComponentRegistryRules(registry);
-  }
+    static public void addDefaultNestedComponentRegistryRules(DefaultNestedComponentRegistry registry) {
+        registry.add(AppenderBase.class, "layout", PatternLayout.class);
+        registry.add(UnsynchronizedAppenderBase.class, "layout", PatternLayout.class);
+
+        registry.add(AppenderBase.class, "encoder", PatternLayoutEncoder.class);
+        registry.add(UnsynchronizedAppenderBase.class, "encoder", PatternLayoutEncoder.class);
+
+        SSLNestedComponentRegistryRules.addDefaultNestedComponentRegistryRules(registry);
+    }
 
 }

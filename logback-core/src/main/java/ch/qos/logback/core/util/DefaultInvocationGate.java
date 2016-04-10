@@ -44,18 +44,17 @@ public class DefaultInvocationGate implements InvocationGate {
     // then the mask should be decreased
     private static final long MASK_DECREASE_THRESHOLD = MASK_INCREASE_THRESHOLD * 8;
 
-    
     public DefaultInvocationGate() {
         this(MASK_INCREASE_THRESHOLD, MASK_DECREASE_THRESHOLD, System.currentTimeMillis());
     }
-    
-    public  DefaultInvocationGate(long minDelayThreshold, long maxDelayThreshold, long currentTime) {
+
+    public DefaultInvocationGate(long minDelayThreshold, long maxDelayThreshold, long currentTime) {
         this.minDelayThreshold = minDelayThreshold;
-        this.maxDelayThreshold = maxDelayThreshold; 
+        this.maxDelayThreshold = maxDelayThreshold;
         this.lowerLimitForMaskMatch = currentTime + minDelayThreshold;
         this.upperLimitForNoMaskMatch = currentTime + maxDelayThreshold;
     }
-    
+
     private long minDelayThreshold;
     private long maxDelayThreshold;
 
@@ -91,12 +90,11 @@ public class DefaultInvocationGate implements InvocationGate {
         this.upperLimitForNoMaskMatch = currentTime + maxDelayThreshold;
     }
 
-
     // package private, for testing purposes only
     long getMask() {
         return mask;
     }
-    
+
     private void increaseMask() {
         if (mask >= MAX_MASK)
             return;

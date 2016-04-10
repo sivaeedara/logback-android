@@ -17,21 +17,21 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
 public class ClassicConstants {
-  public static final String LOGBACK_CONTEXT_SELECTOR = "logback.ContextSelector";
+    public static final String LOGBACK_CONTEXT_SELECTOR = "logback.ContextSelector";
 
-  /**
-   * The maximum number of package separators (dots) that abbreviation
-   * algorithms can handle. Class or logger names with more separators will have
-   * their first MAX_DOTS parts shortened.
-   *
-   */
-  public static final int MAX_DOTS = 16;
+    /**
+     * The maximum number of package separators (dots) that abbreviation
+     * algorithms can handle. Class or logger names with more separators will have
+     * their first MAX_DOTS parts shortened.
+     *
+     */
+    public static final int MAX_DOTS = 16;
 
-  /**
-   * The default stack data depth computed during caller data extraction.
-   */
-  public static final int DEFAULT_MAX_CALLEDER_DATA_DEPTH = 8;
+    /**
+     * The default stack data depth computed during caller data extraction.
+     */
+    public static final int DEFAULT_MAX_CALLEDER_DATA_DEPTH = 8;
 
-  public static final String FINALIZE_SESSION = "FINALIZE_SESSION";
-  public static final Marker FINALIZE_SESSION_MARKER = MarkerFactory.getMarker(FINALIZE_SESSION);
+    public static final String FINALIZE_SESSION = "FINALIZE_SESSION";
+    public static final Marker FINALIZE_SESSION_MARKER = MarkerFactory.getMarker(FINALIZE_SESSION);
 }

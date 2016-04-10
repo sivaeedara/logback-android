@@ -17,7 +17,6 @@ package ch.qos.logback.core.rolling;
 import java.io.IOException;
 import java.util.List;
 
-
 public interface RolloverChecker {
-  public void check(List<String> expectedFilenameList) throws IOException;
+    public void check(List<String> expectedFilenameList) throws IOException;
 }

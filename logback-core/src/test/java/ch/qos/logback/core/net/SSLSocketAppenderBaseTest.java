@@ -28,35 +28,33 @@ import ch.qos.logback.core.spi.PreSerializationTransformer;
  */
 public class SSLSocketAppenderBaseTest {
 
-  private MockContext context = new MockContext();
+    private MockContext context = new MockContext();
 
-  private InstrumentedSSLSocketAppenderBase appender =
-      new InstrumentedSSLSocketAppenderBase();
+    private InstrumentedSSLSocketAppenderBase appender = new InstrumentedSSLSocketAppenderBase();
 
-  @Before
-  public void setUp() throws Exception {
-    appender.setContext(context);
-  }
-
-  @Test
-  public void testUsingDefaultConfig() throws Exception {
-    // should be able to start successfully with no SSL configuration at all
-    appender.start();
-    assertNotNull(appender.getSocketFactory());
-  }
-
-  private static class InstrumentedSSLSocketAppenderBase
-      extends SSLSocketAppenderBase<Object> {
-
-    @Override
-    protected void postProcessEvent(Object event) {
-      throw new UnsupportedOperationException();
+    @Before
+    public void setUp() throws Exception {
+        appender.setContext(context);
     }
 
-    @Override
-    protected PreSerializationTransformer<Object> getPST() {
-      throw new UnsupportedOperationException();
+    @Test
+    public void testUsingDefaultConfig() throws Exception {
+        // should be able to start successfully with no SSL configuration at all
+        appender.start();
+        assertNotNull(appender.getSocketFactory());
     }
 
-  }
+    private static class InstrumentedSSLSocketAppenderBase extends SSLSocketAppenderBase<Object> {
+
+        @Override
+        protected void postProcessEvent(Object event) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected PreSerializationTransformer<Object> getPST() {
+            throw new UnsupportedOperationException();
+        }
+
+    }
 }

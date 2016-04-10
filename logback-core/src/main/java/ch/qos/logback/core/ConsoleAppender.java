@@ -36,46 +36,44 @@ import ch.qos.logback.core.status.WarnStatus;
 @Deprecated
 public class ConsoleAppender<E> extends OutputStreamAppender<E> {
 
-  protected ConsoleTarget target = ConsoleTarget.SystemOut;
+    protected ConsoleTarget target = ConsoleTarget.SystemOut;
 
-  /**
-   * Sets the value of the <b>Target</b> option. Recognized values are
-   * "System.out" and "System.err". Any other value will be ignored.
-   * @param value desired console-output target
-   */
-  public void setTarget(String value) {
-    ConsoleTarget t = ConsoleTarget.findByName(value.trim());
-    if (t == null) {
-      targetWarn(value);
-    } else {
-      target = t;
+    /**
+     * Sets the value of the <b>Target</b> option. Recognized values are
+     * "System.out" and "System.err". Any other value will be ignored.
+     * @param value desired console-output target
+     */
+    public void setTarget(String value) {
+        ConsoleTarget t = ConsoleTarget.findByName(value.trim());
+        if (t == null) {
+            targetWarn(value);
+        } else {
+            target = t;
+        }
     }
-  }
 
-  /**
-   * Returns the current value of the <b>target</b> property. The default value
-   * of the option is "System.out".
-   * <p>
-   * See also {@link #setTarget}.
-   * @return the console-output target's name
-   */
-  public String getTarget() {
-    return target.getName();
-  }
+    /**
+     * Returns the current value of the <b>target</b> property. The default value
+     * of the option is "System.out".
+     * <p>
+     * See also {@link #setTarget}.
+     * @return the console-output target's name
+     */
+    public String getTarget() {
+        return target.getName();
+    }
 
-  private void targetWarn(String val) {
-    Status status = new WarnStatus("[" + val + "] should be one of "
-            + Arrays.toString(ConsoleTarget.values()), this);
-    status.add(new WarnStatus(
-            "Using previously set target, System.out by default.", this));
-    addStatus(status);
-  }
+    private void targetWarn(String val) {
+        Status status = new WarnStatus("[" + val + "] should be one of " + Arrays.toString(ConsoleTarget.values()), this);
+        status.add(new WarnStatus("Using previously set target, System.out by default.", this));
+        addStatus(status);
+    }
 
-  @Override
-  public void start() {
-    OutputStream targetStream = target.getStream();
-    setOutputStream(targetStream);
-    super.start();
-  }
+    @Override
+    public void start() {
+        OutputStream targetStream = target.getStream();
+        setOutputStream(targetStream);
+        super.start();
+    }
 
 }

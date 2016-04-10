@@ -27,7 +27,7 @@ public class WaitOnExecutionMultiThreadedHarness extends AbstractMultiThreadedHa
 
     @Override
     public void waitUntilEndCondition() throws InterruptedException {
-        while(threadPoolExecutor.getCompletedTaskCount() < count) {
+        while (threadPoolExecutor.getCompletedTaskCount() < count) {
             Thread.yield();
         }
     }

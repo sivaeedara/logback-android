@@ -30,23 +30,23 @@ import ch.qos.logback.core.joran.spi.JoranException;
  */
 public class ParentIncludesChildWithIncludedTagTest extends BaseIncludesTezt {
 
-  public ParentIncludesChildWithIncludedTagTest() {
-    super(RESOURCE_DIR + "parent_by_included.xml");
-  }
+    public ParentIncludesChildWithIncludedTagTest() {
+        super(RESOURCE_DIR + "parent_by_included.xml");
+    }
 
-  @Test
-  public void parentIncludesChildLogcatAppender() throws JoranException {
-    assertHasAppender("included-logcat", LogcatAppender.class);
-  }
+    @Test
+    public void parentIncludesChildLogcatAppender() throws JoranException {
+        assertHasAppender("included-logcat", LogcatAppender.class);
+    }
 
-  @Test
-  public void parentIncludesChildFileAppender() throws JoranException {
-    assertHasAppender("included-trace-log", FileAppender.class);
-  }
+    @Test
+    public void parentIncludesChildFileAppender() throws JoranException {
+        assertHasAppender("included-trace-log", FileAppender.class);
+    }
 
-  @Test
-  public void contextHasChildLoggerConfig() {
-    Logger logger = context.getLogger("org.example.test.Tester");
-    assertThat(logger.isInfoEnabled(), is(true));
-  }
+    @Test
+    public void contextHasChildLoggerConfig() {
+        Logger logger = context.getLogger("org.example.test.Tester");
+        assertThat(logger.isInfoEnabled(), is(true));
+    }
 }

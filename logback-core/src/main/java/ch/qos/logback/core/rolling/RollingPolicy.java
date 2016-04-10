@@ -27,42 +27,42 @@ import ch.qos.logback.core.spi.LifeCycle;
  */
 public interface RollingPolicy extends LifeCycle {
 
-  /**
-   * Rolls over log files according to implementation policy.
-   *
-   * <p>This method is invoked by {@link RollingFileAppender}, usually at the
-   * behest of its {@link TriggeringPolicy}.
-   *
-   * @throws RolloverFailure
-   *                 Thrown if the rollover operation fails for any reason.
-   */
-  void rollover() throws RolloverFailure;
+    /**
+     * Rolls over log files according to implementation policy.
+     *
+     * <p>This method is invoked by {@link RollingFileAppender}, usually at the
+     * behest of its {@link TriggeringPolicy}.
+     *
+     * @throws RolloverFailure
+     *                 Thrown if the rollover operation fails for any reason.
+     */
+    void rollover() throws RolloverFailure;
 
-  /**
-   * Get the name of the active log file.
-   *
-   * <p>With implementations such as {@link TimeBasedRollingPolicy}, this
-   * method returns a new file name, where the actual output will be sent.
-   *
-   * <p>On other implementations, this method might return the FileAppender's
-   * file property.
-   * @return the name of the active log file
-   */
-  String getActiveFileName();
+    /**
+     * Get the name of the active log file.
+     *
+     * <p>With implementations such as {@link TimeBasedRollingPolicy}, this
+     * method returns a new file name, where the actual output will be sent.
+     *
+     * <p>On other implementations, this method might return the FileAppender's
+     * file property.
+     * @return the name of the active log file
+     */
+    String getActiveFileName();
 
-  /**
-   * The compression mode for this policy.
-   *
-   * @return the compression mode
-   */
-  CompressionMode getCompressionMode();
+    /**
+     * The compression mode for this policy.
+     *
+     * @return the compression mode
+     */
+    CompressionMode getCompressionMode();
 
-  /**
-   * This method allows RollingPolicy implementations to be aware of their
-   * containing appender.
-   *
-   * @param appender the associated file appender
-   */
+    /**
+     * This method allows RollingPolicy implementations to be aware of their
+     * containing appender.
+     *
+     * @param appender the associated file appender
+     */
 
-  void setParent(FileAppender<?> appender);
+    void setParent(FileAppender<?> appender);
 }
