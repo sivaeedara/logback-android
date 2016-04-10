@@ -41,6 +41,8 @@ import ch.qos.logback.core.status.TrivialStatusListener;
 import ch.qos.logback.core.testUtil.RandomUtil;
 import ch.qos.logback.core.util.CoreTestConstants;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 public class TrivialConfiguratorTest {
@@ -96,9 +98,7 @@ public class TrivialConfiguratorTest {
             doTest(filename);
         } catch (Exception e) {
         }
-        assertEquals(2, tsl.list.size());
-        Status s0 = tsl.list.get(0);
-        assertTrue(s0.getMessage().startsWith(CoreConstants.XML_PARSING));
+        assertThat(tsl.list.get(0).getMessage(), containsString(CoreConstants.XML_PARSING));
     }
 
     @Test
