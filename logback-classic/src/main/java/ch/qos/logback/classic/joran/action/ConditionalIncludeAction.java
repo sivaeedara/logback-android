@@ -56,6 +56,13 @@ public class ConditionalIncludeAction extends AbstractIncludeAction {
     }
 
     @Override
+    protected void handleWarn(String message, Exception e) {
+        if (!isOptional()) {
+            addInfo(message);
+        }
+    }
+
+    @Override
     public void begin(InterpretationContext ic, String name, Attributes attributes) throws ActionException {
         // continue processing only if path not found
         if (peekPath(ic) != null) {

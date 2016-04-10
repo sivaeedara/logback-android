@@ -46,9 +46,9 @@ public abstract class AbstractIncludeAction extends Action {
 
     abstract protected void processInclude(InterpretationContext ic, URL url) throws JoranException;
 
-    protected void handleError(String message, Exception e) {
-        addError(message, e);
-    }
+    abstract protected void handleError(String message, Exception e);
+
+    abstract protected void handleWarn(String message, Exception e);
 
     @Override
     public void begin(InterpretationContext ec, String name, Attributes attributes) throws ActionException {
@@ -121,15 +121,11 @@ public abstract class AbstractIncludeAction extends Action {
 
             return url;
         } catch (MalformedURLException mue) {
-            if (!optional) {
-                String errMsg = "URL [" + urlAttribute + "] is not well formed.";
-                handleError(errMsg, mue);
-            }
+            String errMsg = "URL [" + urlAttribute + "] is not well formed.";
+            handleError(errMsg, mue);
         } catch (IOException e) {
-            if (!optional) {
-                String errMsg = "URL [" + urlAttribute + "] cannot be opened.";
-                handleError(errMsg, e);
-            }
+            String errMsg = "URL [" + urlAttribute + "] cannot be opened.";
+            handleWarn(errMsg, e);
         }
         return null;
     }
@@ -137,10 +133,8 @@ public abstract class AbstractIncludeAction extends Action {
     private URL resourceAsURL(String resourceAttribute) {
         URL url = Loader.getResourceBySelfClassLoader(resourceAttribute);
         if (url == null) {
-            if (!optional) {
-                String errMsg = "Could not find resource corresponding to [" + resourceAttribute + "]";
-                handleError(errMsg, null);
-            }
+            String errMsg = "Could not find resource corresponding to [" + resourceAttribute + "]";
+            handleWarn(errMsg, null);
             return null;
         } else
             return url;
@@ -149,9 +143,7 @@ public abstract class AbstractIncludeAction extends Action {
     private URL filePathAsURL(String path) {
         File file = new File(path);
         if (!file.exists() || !file.isFile()) {
-            if (!optional) {
-                handleError("File does not exist [" + path + "]", new FileNotFoundException(path));
-            }
+            handleWarn("File does not exist [" + path + "]", new FileNotFoundException(path));
             return null;
         }
 

@@ -160,4 +160,14 @@ public class IncludeAction extends AbstractIncludeAction {
             addWarn(msg, t);
         }
     }
+
+    @Override
+    protected void handleError(String message, Exception e) {
+        addError(message, e);
+    }
+
+    @Override
+    protected void handleWarn(String message, Exception e) {
+        optionalWarning(message, e);
+    }
 }
