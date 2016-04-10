@@ -21,14 +21,9 @@ import java.util.List;
 
 import static ch.qos.logback.core.CoreConstants.XML_PARSING;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.SAXParseException;
+import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.sax2.Driver;
 
 import ch.qos.logback.core.Context;
@@ -52,16 +47,16 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
 
     private List<SaxEvent> saxEventList = new ArrayList<SaxEvent>();
     private Locator locator;
-    ElementPath globalElementPath = new ElementPath();
+    private ElementPath globalElementPath = new ElementPath();
 
     final public void recordEvents(InputStream inputStream) throws JoranException {
         recordEvents(new InputSource(inputStream));
     }
 
     public List<SaxEvent> recordEvents(InputSource inputSource) throws JoranException {
-        Driver parser = buildPullParser();
         try {
-            parser.setContentHandler((ContentHandler) this);
+            Driver parser = buildPullParser();
+            parser.setContentHandler(this);
             parser.setErrorHandler(this);
             parser.parse(inputSource);
             return saxEventList;
@@ -83,28 +78,22 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
         throw new JoranException(errMsg, t);
     }
 
-    private Driver buildPullParser() throws JoranException {
+    private Driver buildPullParser() throws SAXException, XmlPullParserException {
+        Driver driver = new Driver();
         try {
-            Driver driver = new Driver();
-            try {
-                driver.setFeature("http://xml.org/sax/features/validation", false);
-            } catch (SAXNotSupportedException e) {
-                // this is ok...we're trying to disable validation, so if it's not
-                // supported, that's even better
-            }
-            driver.setFeature("http://xml.org/sax/features/namespaces", true);
-            return driver;
-        } catch (Exception pce) {
-            String errMsg = "Parser configuration error occurred";
-            addError(errMsg, pce);
-            throw new JoranException(errMsg, pce);
+            driver.setFeature("http://xml.org/sax/features/validation", false);
+        } catch (SAXNotSupportedException e) {
+            // this is ok...we're trying to disable validation, so if it's not
+            // supported, that's even better
         }
+        driver.setFeature("http://xml.org/sax/features/namespaces", true);
+        return driver;
     }
 
     public void startDocument() {
     }
 
-    public Locator getLocator() {
+    private Locator getLocator() {
         return locator;
     }
 
@@ -113,9 +102,8 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
     }
 
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
-
         String q = qName == null || qName.length() == 0 ? localName : qName;
-        String tagName = getTagName(localName, qName);
+        String tagName = getTagName(localName, q);
         globalElementPath.push(tagName);
         ElementPath current = globalElementPath.duplicate();
         saxEventList.add(new StartEvent(current, namespaceURI, localName, qName, atts, getLocator()));
@@ -135,12 +123,12 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
         }
     }
 
-    boolean isSpaceOnly(String bodyStr) {
+    private boolean isSpaceOnly(String bodyStr) {
         String bodyTrimmed = bodyStr.trim();
         return (bodyTrimmed.length() == 0);
     }
 
-    SaxEvent getLastEvent() {
+    private SaxEvent getLastEvent() {
         if (saxEventList.isEmpty()) {
             return null;
         }
@@ -150,11 +138,11 @@ public class SaxEventRecorder extends DefaultHandler implements ContextAware {
 
     public void endElement(String namespaceURI, String localName, String qName) {
         String q = qName == null || qName.length() == 0 ? localName : qName;
-        saxEventList.add(new EndEvent(namespaceURI, localName, qName, getLocator()));
+        saxEventList.add(new EndEvent(namespaceURI, localName, q, getLocator()));
         globalElementPath.pop();
     }
 
-    String getTagName(String localName, String qName) {
+    private String getTagName(String localName, String qName) {
         String tagName = localName;
         if ((tagName == null) || (tagName.length() < 1)) {
             tagName = qName;
