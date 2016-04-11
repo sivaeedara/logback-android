@@ -67,7 +67,7 @@ public class Tokenizer {
             addLiteralToken(tokenList, buf);
             break;
         case START_STATE:
-         // trailing $. see also LOGBACK-1149
+            // trailing $. see also LOGBACK-1149
             buf.append(CoreConstants.DOLLAR);
             addLiteralToken(tokenList, buf);
             break;

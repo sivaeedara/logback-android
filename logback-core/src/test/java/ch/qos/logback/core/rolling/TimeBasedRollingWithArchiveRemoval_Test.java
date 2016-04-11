@@ -57,7 +57,7 @@ public class TimeBasedRollingWithArchiveRemoval_Test extends ScaffoldingForRolli
     TimeBasedFileNamingAndTriggeringPolicy<Object> tbfnatp = new DefaultTimeBasedFileNamingAndTriggeringPolicy<Object>();
 
     StatusChecker checker = new StatusChecker(context);
-    
+
     static long MILLIS_IN_MINUTE = 60 * 1000;
     static long MILLIS_IN_HOUR = 60 * MILLIS_IN_MINUTE;
     static long MILLIS_IN_DAY = 24 * MILLIS_IN_HOUR;
@@ -177,11 +177,10 @@ public class TimeBasedRollingWithArchiveRemoval_Test extends ScaffoldingForRolli
         checkFileCount(sizeInUnitsOfBytesPerPeriod + 1);
     }
 
-    
     @Test
     public void checkThatSmallTotalSizeCapLeavesAtLeastOneArhcive() {
-        long WED_2016_03_23_T_131345_CET = WED_2016_03_23_T_230705_CET-10*CoreConstants.MILLIS_IN_ONE_HOUR;
-        
+        long WED_2016_03_23_T_131345_CET = WED_2016_03_23_T_230705_CET - 10 * CoreConstants.MILLIS_IN_ONE_HOUR;
+
         //long bytesOutputPerPeriod = 15984;
 
         cp = new ConfigParameters(WED_2016_03_23_T_131345_CET);
@@ -196,7 +195,6 @@ public class TimeBasedRollingWithArchiveRemoval_Test extends ScaffoldingForRolli
         checker.assertNoMatch("Deleting.*clean-2016-03-26.txt");
     }
 
-    
     @Test
     public void checkCleanupForBasicDailyRolloverWithMaxSize() {
         cp.maxHistory(6).simulatedNumberOfPeriods(30).startInactivity(10).numInactivityPeriods(1);

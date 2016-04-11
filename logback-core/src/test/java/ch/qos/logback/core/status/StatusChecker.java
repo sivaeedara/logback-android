@@ -39,7 +39,7 @@ public class StatusChecker extends StatusUtil {
     public void assertNoMatch(String regex) {
         assertFalse(containsMatch(regex));
     }
-    
+
     public void assertContainsMatch(String regex) {
         assertTrue(containsMatch(regex));
     }

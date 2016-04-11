@@ -216,7 +216,7 @@ public class LoggerContextTest {
             Logger logger = lc.getLogger(loggerName);
             assertEquals(loggerName, logger.getName());
         }
-        
+
         {
             String loggerName = "toto.x$";
             Logger logger = lc.getLogger(loggerName);

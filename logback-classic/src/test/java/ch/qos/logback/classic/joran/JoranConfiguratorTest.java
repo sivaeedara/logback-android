@@ -410,8 +410,7 @@ public class JoranConfiguratorTest {
         configure(configFileAsStr);
         assertTrue(loggerContext.isPackagingDataEnabled());
     }
-    
-    
+
     @Test
     public void valueOfConvention() throws JoranException {
         String configFileAsStr = ClassicTestConstants.JORAN_INPUT_PREFIX + "valueOfConvention.xml";
